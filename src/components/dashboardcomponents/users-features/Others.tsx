@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
+import { DatePill } from "@/components/ui/date-pill";
 
 export function Others() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -31,18 +32,27 @@ export function Others() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                <Button className="bg-green-500 hover:bg-green-600 text-white">
+                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
                     <Search className="h-4 w-4 mr-2" />
                     Search
                 </Button>
                 <Button variant="outline" size="icon" className="border-gray-300">
                     <Filter className="h-4 w-4" />
-                </Button>
+                </Button> */}
             </div>
 
             {/* User List */}
             <div className="px-6 space-y-4">
-                {others?.data.map((user) => (
+                {others?.data
+                    .filter((user) => {
+                        const searchLower = searchQuery.toLowerCase();
+                        return (
+                            user.user.first_name?.toLowerCase().includes(searchLower) ||
+                            user.user.last_name?.toLowerCase().includes(searchLower) ||
+                            user.user.email.toLowerCase().includes(searchLower)
+                        );
+                    })
+                    .map((user) => (
                     <div
                         key={user.id}
                         className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -71,15 +81,7 @@ export function Others() {
 
                         {/* Action Button */}
                         <div className="flex items-center gap-4">
-                            <Button
-                                variant="destructive"
-                                className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
-                            >
-                                Disable
-                            </Button>
-                            <span className="text-xs text-gray-400">
-                                {new Date(user.created_at).toLocaleDateString()}
-                            </span>
+                            <DatePill date={user.created_at} />
                         </div>
                     </div>
                 ))}

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, UserPlus, Users, Check, ChevronDown, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
+import { DatePill } from "@/components/ui/date-pill";
 
 export function Veterinarians() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -22,20 +23,8 @@ export function Veterinarians() {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Action Buttons */}
-            <div className="px-6 py-4 flex gap-4">
-                <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <Users className="h-4 w-4 mr-2" />
-                    All Veterinarian
-                </Button>
-                <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add Veterinarian
-                </Button>
-            </div>
-
             {/* Search and Filter Section */}
-            <div className="px-6 pb-6 flex items-center gap-4">
+            <div className="px-6 py-6 flex items-center gap-4">
                 <Input
                     type="text"
                     placeholder="Search"
@@ -43,18 +32,28 @@ export function Veterinarians() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                <Button className="bg-green-500 hover:bg-green-600 text-white">
+                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
                     <Search className="h-4 w-4 mr-2" />
                     Search
                 </Button>
                 <Button variant="outline" size="icon" className="border-gray-300">
                     <Filter className="h-4 w-4" />
-                </Button>
+                </Button> */}
             </div>
 
             {/* Veterinarian List */}
             <div className="px-6 space-y-4">
-                {veterinarians?.data.map((vet) => (
+                {veterinarians?.data
+                    .filter((vet) => {
+                        const searchLower = searchQuery.toLowerCase();
+                        return (
+                            vet.user.first_name?.toLowerCase().includes(searchLower) ||
+                            vet.user.last_name?.toLowerCase().includes(searchLower) ||
+                            vet.specialty.toLowerCase().includes(searchLower) ||
+                            vet.address.toLowerCase().includes(searchLower)
+                        );
+                    })
+                    .map((vet) => (
                     <div
                         key={vet.id}
                         className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -91,6 +90,7 @@ export function Veterinarians() {
                                     <Button
                                         variant="destructive"
                                         className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
+                                        disabled
                                     >
                                         Disable
                                     </Button>
@@ -101,20 +101,21 @@ export function Veterinarians() {
                                 </>
                             ) : (
                                 <>
-                                    <Button className="bg-green-500 hover:bg-green-600 text-white">
-                                        Approve
+                                    <Button 
+                                        className="bg-green-500 hover:bg-green-600 text-white"
+                                        onClick={() => useUserStore.getState().verifyUser(vet.id, 'doctor')}
+                                    >
+                                        Verify
                                     </Button>
-                                    <Button
+                                    {/* <Button
                                         variant="destructive"
                                         className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
                                     >
                                         Reject
-                                    </Button>
+                                    </Button> */}
                                 </>
                             )}
-                            <span className="text-xs text-gray-400">
-                                {new Date(vet.created_at).toLocaleDateString()}
-                            </span>
+                            <DatePill date={vet.created_at} />
                         </div>
                     </div>
                 ))}

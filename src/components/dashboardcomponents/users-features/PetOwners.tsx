@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
+// import { Search, Filter, ChevronDown, Loader2 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
+import { DatePill } from "@/components/ui/date-pill";
 
 export function PetOwners() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -31,18 +33,27 @@ export function PetOwners() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                <Button className="bg-green-500 hover:bg-green-600 text-white">
+                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
                     <Search className="h-4 w-4 mr-2" />
                     Search
                 </Button>
                 <Button variant="outline" size="icon" className="border-gray-300">
                     <Filter className="h-4 w-4" />
-                </Button>
+                </Button> */}
             </div>
 
             {/* User List */}
             <div className="px-6 space-y-4">
-                {petOwners?.data.map((owner) => (
+                {petOwners?.data
+                    .filter((owner) => {
+                        const searchLower = searchQuery.toLowerCase();
+                        return (
+                            owner.user.first_name?.toLowerCase().includes(searchLower) ||
+                            owner.user.last_name?.toLowerCase().includes(searchLower) ||
+                            owner.user.email.toLowerCase().includes(searchLower)
+                        );
+                    })
+                    .map((owner) => (
                     <div
                         key={owner.id}
                         className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -71,15 +82,7 @@ export function PetOwners() {
 
                         {/* Action Button */}
                         <div className="flex items-center gap-4">
-                            <Button
-                                variant="destructive"
-                                className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
-                            >
-                                Disable
-                            </Button>
-                            <span className="text-xs text-gray-400">
-                                {new Date(owner.created_at).toLocaleDateString()}
-                            </span>
+                            <DatePill date={owner.created_at} />
                         </div>
                     </div>
                 ))}

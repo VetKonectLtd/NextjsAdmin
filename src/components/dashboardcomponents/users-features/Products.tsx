@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
+import { DatePill } from "@/components/ui/date-pill";
 
 export function Products() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -31,18 +32,27 @@ export function Products() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                <Button className="bg-green-500 hover:bg-green-600 text-white">
+                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
                     <Search className="h-4 w-4 mr-2" />
                     Search
                 </Button>
                 <Button variant="outline" size="icon" className="border-gray-300">
                     <Filter className="h-4 w-4" />
-                </Button>
+                </Button> */}
             </div>
 
             {/* Product List */}
             <div className="px-6 space-y-4">
-                {products?.data.map((product) => (
+                {products?.data
+                    .filter((product) => {
+                        const searchLower = searchQuery.toLowerCase();
+                        return (
+                            product.product_name.toLowerCase().includes(searchLower) ||
+                            product.category.toLowerCase().includes(searchLower) ||
+                            product.store?.store_name.toLowerCase().includes(searchLower)
+                        );
+                    })
+                    .map((product) => (
                     <div
                         key={product.id}
                         className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -76,12 +86,11 @@ export function Products() {
                                         ? "bg-white text-red-600 border border-red-600 hover:bg-red-50"
                                         : "bg-green-500 hover:bg-green-600 text-white"
                                 }
+                                onClick={() => useUserStore.getState().toggleUserStatus(product.id, 'product', product.disabled === "0" ? 'disable' : 'enable')}
                             >
                                 {product.disabled === "0" ? "Disable" : "Enable"}
                             </Button>
-                            <span className="text-xs text-gray-400">
-                                {new Date(product.created_at).toLocaleDateString()}
-                            </span>
+                            <DatePill date={product.created_at} />
                         </div>
                     </div>
                 ))}
