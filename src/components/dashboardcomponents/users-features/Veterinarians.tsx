@@ -1,38 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, UserPlus, Users, Check, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const mockVeterinarians = [
-    {
-        id: 1,
-        name: "Dr. Amechi Anayor",
-        role: "Veterinarian",
-        avatar: "AA",
-        status: "pending",
-        lastActive: "15 mins ago",
-    },
-    {
-        id: 2,
-        name: "Dr. Shadrack",
-        role: "Veterinarian",
-        avatar: "DS",
-        status: "pending",
-        lastActive: "15 mins ago",
-    },
-    {
-        id: 3,
-        name: "Dr. Jones Buganda",
-        role: "Veterinarian",
-        avatar: "JB",
-        status: "approved",
-        lastActive: "Today 12:42 PM CST",
-    },
-];
+import { Search, Filter, UserPlus, Users, Check, ChevronDown, Loader2 } from "lucide-react";
+import { useUserStore } from "@/stores/use-user-store";
 
 export function Veterinarians() {
     const [searchQuery, setSearchQuery] = useState("");
+    const { veterinarians, fetchVeterinarians, isLoading } = useUserStore();
+
+    useEffect(() => {
+        fetchVeterinarians();
+    }, [fetchVeterinarians]);
+
+    if (isLoading && !veterinarians) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white">
@@ -68,25 +54,39 @@ export function Veterinarians() {
 
             {/* Veterinarian List */}
             <div className="px-6 space-y-4">
-                {mockVeterinarians.map((vet) => (
+                {veterinarians?.data.map((vet) => (
                     <div
                         key={vet.id}
                         className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
                     >
                         {/* Avatar */}
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                            {vet.avatar}
-                        </div>
+                        {vet.user.profile?.profile_image_url ? (
+                            <img 
+                                src={vet.user.profile.profile_image_url} 
+                                alt={vet.user.first_name || "Vet"} 
+                                className="w-16 h-16 rounded-full object-cover border-2 border-green-500"
+                            />
+                        ) : (
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                                {(vet.user.first_name?.[0] || "") + (vet.user.last_name?.[0] || "")}
+                            </div>
+                        )}
 
                         {/* Info */}
                         <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 underline">{vet.name}</h3>
+                            <h3 className="font-semibold text-gray-900 underline">
+                                Dr. {vet.user.first_name} {vet.user.last_name}
+                            </h3>
                             <p className="text-sm text-gray-500">{vet.role}</p>
+                            <p className="text-xs text-gray-400">{vet.specialty}</p>
+                            <p className="text-xs text-gray-400">{vet.list_them}</p>
+                            <p className="text-xs text-gray-400">{vet.address}</p>
                         </div>
 
                         {/* Action Buttons */}
                         <div className="flex items-center gap-4">
-                            {vet.status === "approved" ? (
+                            {/* Assuming 'availability' or another field determines status, using placeholder logic for now */}
+                            {vet.availability === "1" ? (
                                 <>
                                     <Button
                                         variant="destructive"
@@ -112,23 +112,37 @@ export function Veterinarians() {
                                     </Button>
                                 </>
                             )}
-                            <span className="text-xs text-gray-400">{vet.lastActive}</span>
+                            <span className="text-xs text-gray-400">
+                                {new Date(vet.created_at).toLocaleDateString()}
+                            </span>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Load More Button */}
-            <div className="mt-6 flex justify-center pb-6">
-                <Button
-                    variant="outline"
-                    className="bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
-                >
-                    Loading more...
-                    <ChevronDown className="h-4 w-4 ml-2 text-green-500" />
-                </Button>
-            </div>
+            {veterinarians?.next_page_url && (
+                <div className="mt-6 flex justify-center pb-6">
+                    <Button
+                        variant="outline"
+                        className="bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
+                        onClick={() => fetchVeterinarians(veterinarians.current_page + 1)}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Loading...
+                            </>
+                        ) : (
+                            <>
+                                Loading more...
+                                <ChevronDown className="h-4 w-4 ml-2 text-green-500" />
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
-

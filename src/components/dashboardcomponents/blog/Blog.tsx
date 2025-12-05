@@ -126,7 +126,7 @@ export function Blog() {
         setViewingBlog(null);
     };
 
-    const handleEdit = (blogId: number) => {
+    const handleEdit = () => {
         // Navigate to edit mode (similar to create)
         setActiveTab("create");
         setViewingBlog(null);
@@ -226,7 +226,7 @@ export function Blog() {
                                                 <div className="flex items-center gap-2">
                                                     <p className="font-semibold text-gray-900">{comment.author}</p>
                                                     {comment.flagged && (
-                                                        <Flag className="h-4 w-4 text-red-600" title="Flagged comment" />
+                                                        <Flag className="h-4 w-4 text-red-600" />
                                                     )}
                                                 </div>
                                                 <p className="text-xs text-gray-500">{comment.date}</p>
@@ -461,7 +461,7 @@ export function Blog() {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => handleEdit(blog.id)}
+                                                    onClick={() => handleEdit()}
                                                     className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 h-8"
                                                 >
                                                     <Edit className="h-4 w-4 mr-1" />

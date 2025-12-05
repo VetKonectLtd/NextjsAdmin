@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
@@ -12,6 +12,7 @@ interface AfricaRegionWithStatsProps {
         icon: React.ComponentType<{ className?: string }>;
         highlighted?: boolean;
     }>;
+    isLoading?: boolean;
 }
 
 // Common African country flags (using emoji as placeholders - can be replaced with SVG flags)
@@ -30,7 +31,7 @@ const africanCountries = [
     "🇿🇦", // South Africa
 ];
 
-export function AfricaRegionWithStats({ statistics }: AfricaRegionWithStatsProps) {
+export function AfricaRegionWithStats({ statistics, isLoading }: AfricaRegionWithStatsProps) {
     const [countrySearch, setCountrySearch] = useState("");
 
     return (
@@ -82,7 +83,7 @@ export function AfricaRegionWithStats({ statistics }: AfricaRegionWithStatsProps
                             key={stat.id}
                             icon={<Icon className="h-8 w-8" />}
                             label={stat.label}
-                            value={stat.value}
+                            value={isLoading ? "..." : stat.value}
                             highlighted={stat.highlighted}
                         />
                     );

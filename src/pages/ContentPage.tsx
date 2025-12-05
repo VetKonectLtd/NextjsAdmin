@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mainNavigationTabs } from "@/constants/navigation";
 import { contentStatistics } from "@/constants/content";
-import { AfricaRegionWithStats } from "@/components/dashboardcomponents/AfricaRegionWithStats";
-import { Content } from "@/components/dashboardcomponents/Content";
+import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
+import { Content } from "@/components/dashboardcomponents/forum-contents/Content";
 import { cn } from "@/lib/utils";
 
 export function ContentPage() {

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mainNavigationTabs } from "@/constants/navigation";
 import { subscriptionStatistics } from "@/constants/subscription";
-import { AfricaRegionWithStats } from "@/components/dashboardcomponents/AfricaRegionWithStats";
-import { Subscription } from "@/components/dashboardcomponents/Subscription";
+import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
+import { Subscription } from "@/components/dashboardcomponents/subscription/Subscription";
 import { cn } from "@/lib/utils";
 
 export function SubscriptionPage() {

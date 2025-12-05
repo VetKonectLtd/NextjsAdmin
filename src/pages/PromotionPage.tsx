@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mainNavigationTabs } from "@/constants/navigation";
 import { promotionStatistics } from "@/constants/promotion";
-import { AfricaRegionWithStats } from "@/components/dashboardcomponents/AfricaRegionWithStats";
-import { Promotion } from "@/components/dashboardcomponents/Promotion";
+import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
+import { Promotion } from "@/components/dashboardcomponents/promotion/Promotion";
 import { cn } from "@/lib/utils";
 
 export function PromotionPage() {

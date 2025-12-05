@@ -105,10 +105,12 @@ export const socialIconMap = {
 };
 
 export const userCategories = [
-  { id: "animal-owners", label: "Animal Owners", path: "/users/animal-owners" },
+  { id: "pet-owners", label: "Pet Owners", path: "/users/pet-owners" },
   { id: "veterinarians", label: "Veterinarians", path: "/users/veterinarians" },
+  { id: "paraprofessionals", label: "Paraprofessionals", path: "/users/paraprofessionals" },
+  { id: "veterinary-clinic", label: "Veterinary Clinic", path: "/users/veterinary-clinic" },
   { id: "store", label: "Store", path: "/users/store" },
-  { id: "clinic", label: "Clinic", path: "/users/clinic" },
-  { id: "pets-farms", label: "Pets & Farms", path: "/users/pets-farms" },
+  { id: "livestock-farmers", label: "Livestock Farmers", path: "/users/livestock-farmers" },
   { id: "products", label: "Products", path: "/users/products" },
+  { id: "others", label: "Others", path: "/users/others" },
 ];

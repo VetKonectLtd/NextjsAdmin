@@ -2,21 +2,37 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { userCategories } from "@/constants/sidebar";
 import { mainNavigationTabs } from "@/constants/navigation";
-import { usersFeaturesStatistics } from "@/constants/users-features";
 import { cn } from "@/lib/utils";
-import { AnimalOwners } from "@/components/dashboardcomponents/AnimalOwners";
-import { Veterinarians } from "@/components/dashboardcomponents/Veterinarians";
-import { Store } from "@/components/dashboardcomponents/Store";
-import { Clinic } from "@/components/dashboardcomponents/Clinic";
-import { PetsAndFarms } from "@/components/dashboardcomponents/PetsAndFarms";
-import { Products } from "@/components/dashboardcomponents/Products";
-import { AfricaRegionWithStats } from "@/components/dashboardcomponents/AfricaRegionWithStats";
+import { PetOwners } from "@/components/dashboardcomponents/users-features/PetOwners";
+import { Veterinarians } from "@/components/dashboardcomponents/users-features/Veterinarians";
+import { Paraprofessionals } from "@/components/dashboardcomponents/users-features/Paraprofessionals";
+import { Store } from "@/components/dashboardcomponents/users-features/Store";
+import { VeterinaryClinic } from "@/components/dashboardcomponents/users-features/VeterinaryClinic";
+import { LivestockFarmers } from "@/components/dashboardcomponents/users-features/LivestockFarmers";
+import { Others } from "@/components/dashboardcomponents/users-features/Others";
+import { Products } from "@/components/dashboardcomponents/users-features/Products";
+import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
+import { useAnalyticsStore } from "@/stores/use-analytics-store";
+
+// Icons
+import TotalUsersIcon from "@/assets/icons/totalUsersIcon.svg?react";
+import AnimalOwnersIcon from "@/assets/icons/animalOwnersIcon.svg?react";
+import TotalVeterinariansIcon from "@/assets/icons/totalVeterinariansIcon.svg?react";
+import TotalStoresIcon from "@/assets/icons/totalStoresIcon.svg?react";
+import TotalClinicsIcon from "@/assets/icons/totalClinicsIcon.svg?react";
+import TotalPetsIcons from "@/assets/icons/totalPetsIcons.svg?react";
 
 export function Dashboard() {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeMainTab, setActiveMainTab] = useState("users-features");
-    const [activeCategory, setActiveCategory] = useState("animal-owners");
+    const [activeCategory, setActiveCategory] = useState("pet-owners");
+    
+    const { data: analyticsData, fetchAnalytics, isLoading } = useAnalyticsStore();
+
+    useEffect(() => {
+        fetchAnalytics();
+    }, [fetchAnalytics]);
 
     useEffect(() => {
         // Handle navigation based on path
@@ -32,29 +48,79 @@ export function Dashboard() {
         }
     }, [location.pathname, navigate]);
 
+    // Build statistics from analytics data
+    const statistics = [
+        {
+            id: "total-users",
+            label: "Total Users",
+            value: analyticsData?.users ?? 0,
+            icon: TotalUsersIcon,
+            highlighted: true,
+        },
+        {
+            id: "animal-owners",
+            label: "Animal Owners",
+            value: (analyticsData?.pet_owner ?? 0) + (analyticsData?.livestock_farmer ?? 0),
+            icon: AnimalOwnersIcon,
+            highlighted: false,
+        },
+        {
+            id: "total-veterinarian",
+            label: "Total Veterinarian",
+            value: (analyticsData?.veterinaryDoctor ?? 0) + (analyticsData?.veterinaryClinic ?? 0) + (analyticsData?.veterinaryParaprofessional ?? 0),
+            icon: TotalVeterinariansIcon,
+            highlighted: false,
+        },
+        {
+            id: "total-stores",
+            label: "Total Stores",
+            value: analyticsData?.stores ?? 0,
+            icon: TotalStoresIcon,
+            highlighted: false,
+        },
+        {
+            id: "total-clinics",
+            label: "Total Clinics",
+            value: analyticsData?.clinics ?? 0,
+            icon: TotalClinicsIcon,
+            highlighted: false,
+        },
+        {
+            id: "total-pets-farms",
+            label: "Total Pets & Farms",
+            value: (analyticsData?.pets ?? 0) + (analyticsData?.farms ?? 0),
+            icon: TotalPetsIcons,
+            highlighted: false,
+        },
+    ];
+
     const renderContent = () => {
         switch (activeCategory) {
-            case "animal-owners":
-                return <AnimalOwners />;
+            case "pet-owners":
+                return <PetOwners />;
             case "veterinarians":
                 return <Veterinarians />;
+            case "paraprofessionals":
+                return <Paraprofessionals />;
+            case "veterinary-clinic":
+                return <VeterinaryClinic />;
             case "store":
                 return <Store />;
-            case "clinic":
-                return <Clinic />;
-            case "pets-farms":
-                return <PetsAndFarms />;
+            case "livestock-farmers":
+                return <LivestockFarmers />;
             case "products":
                 return <Products />;
+            case "others":
+                return <Others />;
             default:
-                return <AnimalOwners />;
+                return <PetOwners />;
         }
     };
 
     return (
         <div className="min-h-screen bg-white">
             {/* Africa Region Section with Users & Features Statistics */}
-            <AfricaRegionWithStats statistics={usersFeaturesStatistics} />
+            <AfricaRegionWithStats statistics={statistics} isLoading={isLoading} />
 
             {/* Main Navigation Tabs */}
             <nav className="bg-white border-b border-gray-200 px-6 py-4">
@@ -106,4 +172,3 @@ export function Dashboard() {
         </div>
     );
 }
-

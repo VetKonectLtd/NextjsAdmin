@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mainNavigationTabs } from "@/constants/navigation";
-import { AfricaRegion } from "@/components/dashboardcomponents/AfricaRegion";
-import { Activities } from "@/components/dashboardcomponents/Activities";
+import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
+import { Activities } from "@/components/dashboardcomponents/activities/Activities";
 import { cn } from "@/lib/utils";
 
 export function ActivitiesPage() {
@@ -12,7 +13,7 @@ export function ActivitiesPage() {
     return (
         <div className="min-h-screen bg-white">
             {/* Africa Region Section - Without Statistics Cards */}
-            <AfricaRegion />
+            <AfricaRegionWithStats statistics={[]} />
 
             {/* Main Navigation Tabs */}
             <nav className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30">
