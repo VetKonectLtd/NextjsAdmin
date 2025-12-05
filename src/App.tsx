@@ -8,6 +8,7 @@ import { PromotionPage } from "@/pages/PromotionPage";
 import { ActivitiesPage } from "@/pages/ActivitiesPage";
 import { BlogPage } from "@/pages/BlogPage";
 import { LoginPage } from "@/pages/LoginPage";
+import AccountPage from "@/pages/AccountPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 function App() {
@@ -84,6 +85,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ActivitiesPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <AccountPage />
               </Layout>
             </ProtectedRoute>
           }

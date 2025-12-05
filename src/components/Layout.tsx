@@ -2,10 +2,11 @@ import type { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { useSidebarStore } from "@/stores/use-sidebar-store";
+import { useAuthStore } from "@/stores/use-auth-store";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { sidebarFooterLinks, sidebarItems } from "@/constants/sidebar";
+import { sidebarItems } from "@/constants/sidebar";
 import { mainNavigationTabs } from "@/constants/navigation";
 
 interface LayoutProps {
@@ -36,8 +37,14 @@ const getPageTitle = (pathname: string): string => {
 
 export function Layout({ children }: LayoutProps) {
     const { isCollapsed, toggleSidebar } = useSidebarStore();
+    const { user } = useAuthStore();
     const location = useLocation();
     const pageTitle = getPageTitle(location.pathname);
+
+    const displayName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Admin" : "Admin";
+    const userEmail = user?.email || "";
+    const userInitials = displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "VK";
+    const profileImageUrl = user?.profile_picture_url || "/avatar.png";
 
     return (
         <div className="flex h-screen overflow-hidden bg-gray-100">
@@ -74,14 +81,29 @@ export function Layout({ children }: LayoutProps) {
                     <div className="flex items-center gap-3">
                         <div className="text-right">
                             <p className="font-semibold text-gray-900 text-sm">
-                                {sidebarFooterLinks.profile.name}
+                                {displayName}
                             </p>
                             <p className="text-xs text-gray-500">
-                                {sidebarFooterLinks.profile.email}
+                                {userEmail}
                             </p>
                         </div>
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden">
-                            VK
+                        <div className="w-10 h-10 rounded-full border-2 border-green-500 flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden">
+                            {user?.profile_picture_url ? (
+                                <img 
+                                    src={profileImageUrl} 
+                                    alt={displayName}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.parentElement!.classList.add('bg-gradient-to-br', 'from-orange-400', 'to-orange-600');
+                                        e.currentTarget.parentElement!.innerHTML = userInitials;
+                                    }}
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                                    {userInitials}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

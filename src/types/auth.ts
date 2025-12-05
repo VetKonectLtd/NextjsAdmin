@@ -35,7 +35,7 @@ export interface UpdateProfilePayload {
   last_name: string;
   phone_number: string;
   location: string;
-  profile_picture?: string;
+  profile_picture?: File | string;
   password?: string;
   password_confirmation?: string;
 }

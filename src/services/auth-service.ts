@@ -19,7 +19,22 @@ export const authService = {
   },
 
   updateProfile: async (data: UpdateProfilePayload): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/v3/admin/update-details', data);
+    const formData = new FormData();
+    
+    if (data.email) formData.append('email', data.email);
+    if (data.first_name) formData.append('first_name', data.first_name);
+    if (data.last_name) formData.append('last_name', data.last_name);
+    if (data.phone_number) formData.append('phone_number', data.phone_number);
+    if (data.location) formData.append('location', data.location);
+    if (data.profile_picture) formData.append('profile_picture', data.profile_picture);
+    if (data.password) formData.append('password', data.password);
+    if (data.password_confirmation) formData.append('password_confirmation', data.password_confirmation);
+
+    const response = await apiClient.post<AuthResponse>('/v3/admin/update-details', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 

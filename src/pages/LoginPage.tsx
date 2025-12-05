@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/use-auth-store';
 import { Button } from '@/components/ui/button';
 import FormInput from '@/components/ui/form-input';
 import { Loader2 } from 'lucide-react';
+import LogoIcon from '@/assets/logo.svg?react';
 
 export function LoginPage() {
   const [staffId, setStaffId] = useState('');
@@ -32,7 +33,8 @@ export function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md px-6">
         {/* Logo / Branding */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
+          <LogoIcon className="w-16 h-16 mb-3" />
           <h1 className="text-3xl font-bold text-green-600">Vet Konnect</h1>
           <p className="text-gray-500 mt-2">Admin Dashboard</p>
         </div>
