@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Loader2 } from "lucide-react";
-// import { Search, Filter, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, AlertCircle, Users } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 
 export function PetOwners() {
     const [searchQuery, setSearchQuery] = useState("");
-    const { petOwners, fetchPetOwners, isLoading } = useUserStore();
+    const { petOwners, fetchPetOwners, isLoading, error } = useUserStore();
 
     useEffect(() => {
         fetchPetOwners();
@@ -22,6 +21,28 @@ export function PetOwners() {
         );
     }
 
+    if (error && !petOwners) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load pet owners</h3>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <Button onClick={() => fetchPetOwners()} className="bg-green-500 hover:bg-green-600 text-white">
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
+    const filteredOwners = petOwners?.data?.filter((owner) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            owner.user.first_name?.toLowerCase().includes(searchLower) ||
+            owner.user.last_name?.toLowerCase().includes(searchLower) ||
+            owner.user.email.toLowerCase().includes(searchLower)
+        );
+    }) || [];
+
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
@@ -33,27 +54,20 @@ export function PetOwners() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <Search className="h-4 w-4 mr-2" />
-                    Search
-                </Button>
-                <Button variant="outline" size="icon" className="border-gray-300">
-                    <Filter className="h-4 w-4" />
-                </Button> */}
             </div>
 
             {/* User List */}
             <div className="px-6 space-y-4">
-                {petOwners?.data
-                    .filter((owner) => {
-                        const searchLower = searchQuery.toLowerCase();
-                        return (
-                            owner.user.first_name?.toLowerCase().includes(searchLower) ||
-                            owner.user.last_name?.toLowerCase().includes(searchLower) ||
-                            owner.user.email.toLowerCase().includes(searchLower)
-                        );
-                    })
-                    .map((owner) => (
+                {filteredOwners.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <Users className="h-12 w-12 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No pet owners found</h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery ? "Try adjusting your search query" : "Pet owners will appear here once they register"}
+                        </p>
+                    </div>
+                ) : (
+                    filteredOwners.map((owner) => (
                     <div
                         key={owner.id}
                         className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -85,7 +99,8 @@ export function PetOwners() {
                             <DatePill date={owner.created_at} />
                         </div>
                     </div>
-                ))}
+                ))
+                )}
             </div>
 
             {/* Load More Button */}

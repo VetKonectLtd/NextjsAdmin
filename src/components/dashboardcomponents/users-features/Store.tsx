@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, AlertCircle, Store as StoreIcon } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 
 export function Store() {
     const [searchQuery, setSearchQuery] = useState("");
-    const { stores, fetchStores, isLoading } = useUserStore();
+    const { stores, fetchStores, isLoading, error } = useUserStore();
 
     useEffect(() => {
         fetchStores();
@@ -21,6 +21,27 @@ export function Store() {
         );
     }
 
+    if (error && !stores) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load stores</h3>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <Button onClick={() => fetchStores()} className="bg-green-500 hover:bg-green-600 text-white">
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
+    const filteredStores = stores?.data?.filter((store) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            store.store_name.toLowerCase().includes(searchLower) ||
+            store.location.toLowerCase().includes(searchLower)
+        );
+    }) || [];
+
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
@@ -32,26 +53,20 @@ export function Store() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <Search className="h-4 w-4 mr-2" />
-                    Search
-                </Button>
-                <Button variant="outline" size="icon" className="border-gray-300">
-                    <Filter className="h-4 w-4" />
-                </Button> */}
             </div>
 
             {/* Store List */}
             <div className="px-6 space-y-4">
-                {stores?.data
-                    .filter((store) => {
-                        const searchLower = searchQuery.toLowerCase();
-                        return (
-                            store.store_name.toLowerCase().includes(searchLower) ||
-                            store.location.toLowerCase().includes(searchLower)
-                        );
-                    })
-                    .map((store) => (
+                {filteredStores.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <StoreIcon className="h-12 w-12 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No stores found</h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery ? "Try adjusting your search query" : "Stores will appear here once they register"}
+                        </p>
+                    </div>
+                ) : (
+                    filteredStores.map((store) => (
                     <div
                         key={store.id}
                         className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -82,7 +97,8 @@ export function Store() {
                             <DatePill date={store.created_at} />
                         </div>
                     </div>
-                ))}
+                ))
+                )}
             </div>
 
             {/* Load More Button */}

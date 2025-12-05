@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, AlertCircle, Package } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 
 export function Products() {
     const [searchQuery, setSearchQuery] = useState("");
-    const { products, fetchProducts, isLoading } = useUserStore();
+    const { products, fetchProducts, isLoading, error } = useUserStore();
 
     useEffect(() => {
         fetchProducts();
@@ -21,6 +21,28 @@ export function Products() {
         );
     }
 
+    if (error && !products) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load products</h3>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <Button onClick={() => fetchProducts()} className="bg-green-500 hover:bg-green-600 text-white">
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
+    const filteredProducts = products?.data?.filter((product) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            product.product_name.toLowerCase().includes(searchLower) ||
+            product.category.toLowerCase().includes(searchLower) ||
+            product.store?.store_name.toLowerCase().includes(searchLower)
+        );
+    }) || [];
+
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
@@ -32,27 +54,20 @@ export function Products() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <Search className="h-4 w-4 mr-2" />
-                    Search
-                </Button>
-                <Button variant="outline" size="icon" className="border-gray-300">
-                    <Filter className="h-4 w-4" />
-                </Button> */}
             </div>
 
             {/* Product List */}
             <div className="px-6 space-y-4">
-                {products?.data
-                    .filter((product) => {
-                        const searchLower = searchQuery.toLowerCase();
-                        return (
-                            product.product_name.toLowerCase().includes(searchLower) ||
-                            product.category.toLowerCase().includes(searchLower) ||
-                            product.store?.store_name.toLowerCase().includes(searchLower)
-                        );
-                    })
-                    .map((product) => (
+                {filteredProducts.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <Package className="h-12 w-12 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery ? "Try adjusting your search query" : "Products will appear here once stores add them"}
+                        </p>
+                    </div>
+                ) : (
+                    filteredProducts.map((product) => (
                     <div
                         key={product.id}
                         className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -93,7 +108,8 @@ export function Products() {
                             <DatePill date={product.created_at} />
                         </div>
                     </div>
-                ))}
+                ))
+                )}
             </div>
 
             {/* Load More Button */}

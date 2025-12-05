@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, AlertCircle, UserCircle } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 
 export function Others() {
     const [searchQuery, setSearchQuery] = useState("");
-    const { others, fetchOthers, isLoading } = useUserStore();
+    const { others, fetchOthers, isLoading, error } = useUserStore();
 
     useEffect(() => {
         fetchOthers();
@@ -21,6 +21,28 @@ export function Others() {
         );
     }
 
+    if (error && !others) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load users</h3>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <Button onClick={() => fetchOthers()} className="bg-green-500 hover:bg-green-600 text-white">
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
+    const filteredUsers = others?.data?.filter((user) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            user.user.first_name?.toLowerCase().includes(searchLower) ||
+            user.user.last_name?.toLowerCase().includes(searchLower) ||
+            user.user.email.toLowerCase().includes(searchLower)
+        );
+    }) || [];
+
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
@@ -32,27 +54,20 @@ export function Others() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <Search className="h-4 w-4 mr-2" />
-                    Search
-                </Button>
-                <Button variant="outline" size="icon" className="border-gray-300">
-                    <Filter className="h-4 w-4" />
-                </Button> */}
             </div>
 
             {/* User List */}
             <div className="px-6 space-y-4">
-                {others?.data
-                    .filter((user) => {
-                        const searchLower = searchQuery.toLowerCase();
-                        return (
-                            user.user.first_name?.toLowerCase().includes(searchLower) ||
-                            user.user.last_name?.toLowerCase().includes(searchLower) ||
-                            user.user.email.toLowerCase().includes(searchLower)
-                        );
-                    })
-                    .map((user) => (
+                {filteredUsers.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <UserCircle className="h-12 w-12 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No users found</h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery ? "Try adjusting your search query" : "Users will appear here once they register"}
+                        </p>
+                    </div>
+                ) : (
+                    filteredUsers.map((user) => (
                     <div
                         key={user.id}
                         className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -84,7 +99,8 @@ export function Others() {
                             <DatePill date={user.created_at} />
                         </div>
                     </div>
-                ))}
+                ))
+                )}
             </div>
 
             {/* Load More Button */}

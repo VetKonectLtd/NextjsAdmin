@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Check, X, AlertCircle, Loader2, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Filter, Check, X, AlertCircle, Loader2, Trash2, ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
 import { useForumStore } from "@/stores/use-forum-store";
 import { DatePill } from "@/components/ui/date-pill";
 
 export function Content() {
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedId, setExpandedId] = useState<number | null>(null);
-    const { forums, fetchForums, searchForums, approveForum, rejectForum, deleteForum, isLoading } = useForumStore();
+    const { forums, fetchForums, searchForums, approveForum, rejectForum, deleteForum, isLoading, error } = useForumStore();
 
     useEffect(() => {
         fetchForums();
@@ -62,6 +62,19 @@ export function Content() {
         );
     }
 
+    if (error && !forums) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load forums</h3>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <Button onClick={() => fetchForums()} className="bg-green-500 hover:bg-green-600 text-white">
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
@@ -87,7 +100,16 @@ export function Content() {
 
             {/* Content List */}
             <div className="px-6 space-y-4 pb-6">
-                {forums?.data.map((content) => (
+                {(!forums?.data || forums.data.length === 0) ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <MessageSquare className="h-12 w-12 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No forums found</h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery ? "Try adjusting your search query" : "Forum posts will appear here once users create them"}
+                        </p>
+                    </div>
+                ) : (
+                    forums.data.map((content) => (
                     <div
                         key={content.id}
                         className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
@@ -193,7 +215,8 @@ export function Content() {
                             </div>
                         )}
                     </div>
-                ))}
+                ))
+                )}
             </div>
 
             {/* Load More Button */}

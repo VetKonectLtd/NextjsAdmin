@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2, AlertCircle, Stethoscope } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 
 export function Veterinarians() {
     const [searchQuery, setSearchQuery] = useState("");
-    const { veterinarians, fetchVeterinarians, isLoading } = useUserStore();
+    const { veterinarians, fetchVeterinarians, isLoading, error } = useUserStore();
 
     useEffect(() => {
         fetchVeterinarians();
@@ -21,6 +21,29 @@ export function Veterinarians() {
         );
     }
 
+    if (error && !veterinarians) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load veterinarians</h3>
+                <p className="text-sm text-gray-500 mb-4">{error}</p>
+                <Button onClick={() => fetchVeterinarians()} className="bg-green-500 hover:bg-green-600 text-white">
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
+    const filteredVets = veterinarians?.data?.filter((vet) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            vet.user.first_name?.toLowerCase().includes(searchLower) ||
+            vet.user.last_name?.toLowerCase().includes(searchLower) ||
+            vet.specialty.toLowerCase().includes(searchLower) ||
+            vet.address.toLowerCase().includes(searchLower)
+        );
+    }) || [];
+
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
@@ -32,28 +55,20 @@ export function Veterinarians() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1"
                 />
-                {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
-                    <Search className="h-4 w-4 mr-2" />
-                    Search
-                </Button>
-                <Button variant="outline" size="icon" className="border-gray-300">
-                    <Filter className="h-4 w-4" />
-                </Button> */}
             </div>
 
             {/* Veterinarian List */}
             <div className="px-6 space-y-4">
-                {veterinarians?.data
-                    .filter((vet) => {
-                        const searchLower = searchQuery.toLowerCase();
-                        return (
-                            vet.user.first_name?.toLowerCase().includes(searchLower) ||
-                            vet.user.last_name?.toLowerCase().includes(searchLower) ||
-                            vet.specialty.toLowerCase().includes(searchLower) ||
-                            vet.address.toLowerCase().includes(searchLower)
-                        );
-                    })
-                    .map((vet) => (
+                {filteredVets.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <Stethoscope className="h-12 w-12 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No veterinarians found</h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery ? "Try adjusting your search query" : "Veterinarians will appear here once they register"}
+                        </p>
+                    </div>
+                ) : (
+                    filteredVets.map((vet) => (
                     <div
                         key={vet.id}
                         className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
@@ -84,7 +99,6 @@ export function Veterinarians() {
 
                         {/* Action Buttons */}
                         <div className="flex items-center gap-4">
-                            {/* Assuming 'availability' or another field determines status, using placeholder logic for now */}
                             {vet.availability === "1" ? (
                                 <>
                                     <Button
@@ -107,18 +121,13 @@ export function Veterinarians() {
                                     >
                                         Verify
                                     </Button>
-                                    {/* <Button
-                                        variant="destructive"
-                                        className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
-                                    >
-                                        Reject
-                                    </Button> */}
                                 </>
                             )}
                             <DatePill date={vet.created_at} />
                         </div>
                     </div>
-                ))}
+                ))
+                )}
             </div>
 
             {/* Load More Button */}
