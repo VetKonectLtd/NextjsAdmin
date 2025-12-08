@@ -36,7 +36,7 @@ const getPageTitle = (pathname: string): string => {
 };
 
 export function Layout({ children }: LayoutProps) {
-    const { isCollapsed, toggleSidebar } = useSidebarStore();
+    const { isCollapsed, toggleSidebar, isMobileOpen, setMobileOpen } = useSidebarStore();
     const { user } = useAuthStore();
     const location = useLocation();
     const pageTitle = getPageTitle(location.pathname);
@@ -54,17 +54,30 @@ export function Layout({ children }: LayoutProps) {
             <div
                 className={cn(
                     "flex-1 flex flex-col transition-all duration-300 overflow-hidden",
-                    isCollapsed ? "ml-20" : "ml-64"
+                    // No margin on mobile, margin on desktop based on collapsed state
+                    "ml-0 lg:ml-64",
+                    isCollapsed && "lg:ml-20"
                 )}
             >
                 {/* Top Bar with Toggle Button and Profile */}
-                <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-                    <div className="flex items-center gap-4">
+                <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-40">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Mobile hamburger menu */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setMobileOpen(!isMobileOpen)}
+                            className="hover:bg-gray-100 lg:hidden"
+                        >
+                            <Menu className="h-5 w-5" />
+                        </Button>
+                        
+                        {/* Desktop toggle */}
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={toggleSidebar}
-                            className="hover:bg-gray-100"
+                            className="hover:bg-gray-100 hidden lg:flex"
                         >
                             {isCollapsed ? (
                                 <Menu className="h-5 w-5" />
@@ -72,22 +85,23 @@ export function Layout({ children }: LayoutProps) {
                                 <X className="h-5 w-5" />
                             )}
                         </Button>
-                        <h1 className="text-xl font-semibold text-gray-900">
+                        
+                        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
                             {pageTitle}
                         </h1>
                     </div>
 
                     {/* Profile Area */}
-                    <div className="flex items-center gap-3">
-                        <div className="text-right">
-                            <p className="font-semibold text-gray-900 text-sm">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="text-right hidden sm:block">
+                            <p className="font-semibold text-gray-900 text-sm truncate max-w-[120px] lg:max-w-none">
                                 {displayName}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 truncate max-w-[120px] lg:max-w-none">
                                 {userEmail}
                             </p>
                         </div>
-                        <div className="w-10 h-10 rounded-full border-2 border-green-500 flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-green-500 flex items-center justify-center text-white font-semibold flex-shrink-0 overflow-hidden">
                             {user?.profile_picture_url ? (
                                 <img 
                                     src={profileImageUrl} 
@@ -100,7 +114,7 @@ export function Layout({ children }: LayoutProps) {
                                     }}
                                 />
                             ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                                <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-sm sm:text-base">
                                     {userInitials}
                                 </div>
                             )}
@@ -114,4 +128,3 @@ export function Layout({ children }: LayoutProps) {
         </div>
     );
 }
-
