@@ -46,7 +46,7 @@ export function PetOwners() {
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
-            <div className="px-6 py-6 flex items-center gap-4">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 flex items-center gap-3 sm:gap-4">
                 <Input
                     type="text"
                     placeholder="Search"
@@ -57,7 +57,7 @@ export function PetOwners() {
             </div>
 
             {/* User List */}
-            <div className="px-6 space-y-4">
+            <div className="px-4 sm:px-6 space-y-3 sm:space-y-4 pb-6">
                 {filteredOwners.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <Users className="h-12 w-12 text-gray-300 mb-4" />
@@ -70,14 +70,14 @@ export function PetOwners() {
                     filteredOwners.map((owner) => (
                     <div
                         key={owner.id}
-                        className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4"
+                        className="bg-gray-50 rounded-lg border border-gray-200 p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
                     >
                         {/* Avatar */}
                         {owner.user.profile?.profile_image_url ? (
                             <img 
                                 src={owner.user.profile.profile_image_url} 
                                 alt={owner.user.first_name || "User"} 
-                                className="w-12 h-12 rounded-full object-cover border-2 border-green-500"
+                                className="w-12 h-12 rounded-full object-cover border-2 border-green-500 flex-shrink-0"
                             />
                         ) : (
                             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
@@ -86,16 +86,16 @@ export function PetOwners() {
                         )}
 
                         {/* User Info */}
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 truncate">
                                 {owner.user.first_name} {owner.user.last_name}
                             </h3>
-                            <p className="text-sm text-gray-500">{owner.role}</p>
-                            <p className="text-xs text-gray-400">{owner.user.email}</p>
+                            <p className="text-sm text-gray-500 truncate">{owner.role}</p>
+                            <p className="text-xs text-gray-400 truncate">{owner.user.email}</p>
                         </div>
 
                         {/* Action Button */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                             <DatePill date={owner.created_at} />
                         </div>
                     </div>

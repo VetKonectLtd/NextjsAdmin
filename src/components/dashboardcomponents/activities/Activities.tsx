@@ -62,7 +62,7 @@ export function Activities() {
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
-            <div className="px-6 py-6 flex items-center gap-4">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 <Input
                     type="text"
                     placeholder="Search activities..."
@@ -83,13 +83,10 @@ export function Activities() {
                     )}
                     Search
                 </Button>
-                {/* <Button variant="outline" size="icon" className="border-gray-300">
-                    <Filter className="h-4 w-4" />
-                </Button> */}
             </div>
 
             {/* Activity List */}
-            <div className="px-6 space-y-4 pb-6">
+            <div className="px-4 sm:px-6 space-y-3 sm:space-y-4 pb-6">
                 {(!activities || activities.length === 0) ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <Activity className="h-12 w-12 text-gray-300 mb-4" />

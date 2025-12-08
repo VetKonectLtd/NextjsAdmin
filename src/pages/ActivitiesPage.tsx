@@ -16,8 +16,8 @@ export function ActivitiesPage() {
             <AfricaRegionWithStats statistics={[]} />
 
             {/* Main Navigation Tabs */}
-            <nav className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30">
-                <div className="flex items-center gap-6">
+            <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-30">
+                <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
                     {mainNavigationTabs.map((tab) => (
                         <button
                             key={tab.id}
@@ -26,7 +26,7 @@ export function ActivitiesPage() {
                                 navigate(tab.path);
                             }}
                             className={cn(
-                                "px-4 py-2 text-sm font-medium transition-colors",
+                                "px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0",
                                 activeTab === tab.id
                                     ? "text-gray-900 font-bold text-base border-b-2 border-green-500"
                                     : "text-gray-600 hover:text-gray-900"

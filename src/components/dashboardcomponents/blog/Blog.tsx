@@ -435,14 +435,14 @@ export function BlogComponent() {
     return (
         <div className="min-h-screen bg-white">
             {/* Sub Navigation Tabs */}
-            <nav className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex items-center gap-6">
+            <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
+                <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
                     {blogTabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "px-4 py-2 text-sm font-medium transition-colors",
+                                "px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0",
                                 activeTab === tab.id
                                     ? "text-gray-900 font-bold text-base border-b-2 border-green-500"
                                     : "text-gray-600 hover:text-gray-900"
@@ -456,7 +456,7 @@ export function BlogComponent() {
 
             {/* Blog Creation Form */}
             {activeTab === "create" && (
-                <div className="px-6 py-6 space-y-6">
+                <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
                     {/* Title Input */}
                     <div>
                         <Input
@@ -564,7 +564,7 @@ export function BlogComponent() {
             {activeTab === "recent" && (
                 <>
                     {/* Search and Filter Section */}
-                    <div className="px-6 py-6 flex items-center gap-4">
+                    <div className="px-4 sm:px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                         <Input
                             type="text"
                             placeholder="Search"
@@ -576,13 +576,13 @@ export function BlogComponent() {
                             <Search className="h-4 w-4 mr-2" />
                             Search
                         </Button>
-                        <Button variant="outline" size="icon" className="border-gray-300">
+                        <Button variant="outline" size="icon" className="border-gray-300 hidden sm:flex">
                             <Filter className="h-4 w-4" />
                         </Button>
                     </div>
 
                     {/* Blog Posts Table */}
-                    <div className="px-6 pb-6">
+                    <div className="px-4 sm:px-6 pb-4 sm:pb-6">
                         {isLoading ? (
                             <div className="flex justify-center py-12">
                                 <Loader2 className="h-8 w-8 animate-spin text-green-500" />
@@ -592,9 +592,9 @@ export function BlogComponent() {
                                 <p>No blogs found</p>
                             </div>
                         ) : (
-                            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
                                 {/* Table Header */}
-                                <div className="grid grid-cols-7 gap-4 bg-gray-50 px-4 py-3 border-b border-gray-200 font-semibold text-sm text-gray-700">
+                                <div className="grid grid-cols-7 gap-4 bg-gray-50 px-4 py-3 border-b border-gray-200 font-semibold text-sm text-gray-700 min-w-[800px]">
                                     <div>Title</div>
                                     <div>Content</div>
                                     <div>Status</div>
@@ -609,7 +609,7 @@ export function BlogComponent() {
                                     {filteredBlogs.map((blog) => (
                                         <div
                                             key={blog.id}
-                                            className="grid grid-cols-7 gap-4 px-4 py-4 items-center hover:bg-gray-50 transition-colors"
+                                            className="grid grid-cols-7 gap-4 px-4 py-4 items-center hover:bg-gray-50 transition-colors min-w-[800px]"
                                         >
                                             {/* Title */}
                                             <div className="flex items-center gap-2">
