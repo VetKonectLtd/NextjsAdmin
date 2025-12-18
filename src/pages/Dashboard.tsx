@@ -11,6 +11,7 @@ import { VeterinaryClinic } from "@/components/dashboardcomponents/users-feature
 import { LivestockFarmers } from "@/components/dashboardcomponents/users-features/LivestockFarmers";
 import { Others } from "@/components/dashboardcomponents/users-features/Others";
 import { Products } from "@/components/dashboardcomponents/users-features/Products";
+import { Vendors } from "@/components/dashboardcomponents/users-features/Vendors";
 import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
 import { useAnalyticsStore } from "@/stores/use-analytics-store";
 
@@ -110,6 +111,8 @@ export function Dashboard() {
                 return <LivestockFarmers />;
             case "products":
                 return <Products />;
+            case "vendors":
+                return <Vendors />;
             case "others":
                 return <Others />;
             default:

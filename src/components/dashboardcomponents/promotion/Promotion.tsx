@@ -289,12 +289,12 @@ function PromotionCard({
     let statusColor = "text-green-600 bg-green-50 border-green-200";
     let statusLabel = "Active";
 
-    if (isExpired) {
-        statusColor = "text-orange-600 bg-orange-50 border-orange-200";
-        statusLabel = "Expired";
-    } else if (isCancelled) {
+    if (isCancelled) {
         statusColor = "text-red-600 bg-red-50 border-red-200";
         statusLabel = "Deactivated";
+    } else if (isExpired) {
+        statusColor = "text-orange-600 bg-orange-50 border-orange-200";
+        statusLabel = "Expired";
     }
 
     return (

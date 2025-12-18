@@ -158,10 +158,29 @@ export interface OtherUser {
 
 // API Response Wrappers
 export type PetOwnersResponse = PaginatedResponse<PetOwner>;
-export interface VeterinariansResponse { veterinary_doctors: PaginatedResponse<Veterinarian> }
-export interface ParaprofessionalsResponse { veterinary_paraprofessionals: PaginatedResponse<Paraprofessional> }
-export interface ClinicsResponse { clinics: PaginatedResponse<Clinic> }
-export interface StoresResponse { stores: PaginatedResponse<Store> }
+export interface VeterinariansResponse {
+  veterinary_doctors: PaginatedResponse<Veterinarian>;
+}
+export interface ParaprofessionalsResponse {
+  veterinary_paraprofessionals: PaginatedResponse<Paraprofessional>;
+}
+export interface ClinicsResponse {
+  clinics: PaginatedResponse<Clinic>;
+}
+export interface StoresResponse {
+  stores: PaginatedResponse<Store>;
+}
+export type VendorsResponse = PaginatedResponse<Vendor>;
 export type LivestockFarmersResponse = PaginatedResponse<LivestockFarmer>;
-export interface ProductsResponse { products: PaginatedResponse<Product> }
+export interface ProductsResponse {
+  products: PaginatedResponse<Product>;
+}
 export type OthersResponse = PaginatedResponse<OtherUser>;
+
+export interface Vendor {
+  id: number;
+  user_id: string;
+  role: string;
+  created_at: string;
+  user: BaseUser;
+}

@@ -67,21 +67,38 @@ export const sidebarItems: SidebarItem[] = [
 
 export const sidebarFooterLinks = {
   legal: [
-    { label: "Privacy Policy", path: "/privacy" },
-    { label: "Terms & Conditions", path: "/terms" },
-    { label: "About Vet konect", path: "/about" },
+    {
+      label: "Privacy Policy",
+      path: "https://nextjs-frontend-beta-drab.vercel.app/about#",
+    },
+    {
+      label: "Terms & Conditions",
+      path: "https://nextjs-frontend-beta-drab.vercel.app/about#",
+    },
+    {
+      label: "About Vet konect",
+      path: "https://nextjs-frontend-beta-drab.vercel.app/about",
+    },
     { label: "Sitemap", path: "/sitemap" },
   ],
   contact: {
-    email: "Supports@vetkonect.com",
-    whatsapp: "WhatsApp: +23400000000",
+    email: "admin@vetkonect.com",
+    whatsapp: "WhatsApp: +2347078340106",
   },
   social: [
-    { name: "LinkedIn", icon: "linkedin", path: "#" },
-    { name: "Twitter", icon: "twitter", path: "#" },
+    {
+      name: "LinkedIn",
+      icon: "linkedin",
+      path: "https://www.linkedin.com/company/vet-konect/",
+    },
+    { name: "Twitter", icon: "twitter", path: "https://x.com/Vetkonectng" },
     { name: "Discord", icon: "discord", path: "#" },
     { name: "Slack", icon: "slack", path: "#" },
-    { name: "Facebook", icon: "facebook", path: "#" },
+    {
+      name: "Facebook",
+      icon: "facebook",
+      path: "https://www.facebook.com/vetkonect",
+    },
   ],
   profile: {
     name: "Vet Konect",
@@ -107,10 +124,23 @@ export const socialIconMap = {
 export const userCategories = [
   { id: "pet-owners", label: "Pet Owners", path: "/users/pet-owners" },
   { id: "veterinarians", label: "Veterinarians", path: "/users/veterinarians" },
-  { id: "paraprofessionals", label: "Paraprofessionals", path: "/users/paraprofessionals" },
-  { id: "veterinary-clinic", label: "Veterinary Clinic", path: "/users/veterinary-clinic" },
+  {
+    id: "paraprofessionals",
+    label: "Paraprofessionals",
+    path: "/users/paraprofessionals",
+  },
+  {
+    id: "veterinary-clinic",
+    label: "Veterinary Clinic",
+    path: "/users/veterinary-clinic",
+  },
   { id: "store", label: "Store", path: "/users/store" },
-  { id: "livestock-farmers", label: "Livestock Farmers", path: "/users/livestock-farmers" },
+  {
+    id: "livestock-farmers",
+    label: "Livestock Farmers",
+    path: "/users/livestock-farmers",
+  },
   { id: "products", label: "Products", path: "/users/products" },
+  { id: "vendors", label: "Vendors", path: "/users/vendors" },
   { id: "others", label: "Others", path: "/users/others" },
 ];

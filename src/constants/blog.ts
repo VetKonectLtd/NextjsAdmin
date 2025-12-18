@@ -1,7 +1,7 @@
 export const blogTabs = [
   { id: "create", label: "Create a blog" },
   { id: "recent", label: "Recent blog" },
-  { id: "flagged", label: "Flagged comment" },
+  // { id: "flagged", label: "Flagged comment" },
   { id: "deleted", label: "Deleted blog" },
 ];
 

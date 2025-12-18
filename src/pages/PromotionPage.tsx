@@ -30,14 +30,18 @@ export function PromotionPage() {
         const activePlans = promotions.filter(p => p.status === 'active').length;
         const totalUsers = promotionUsers.length;
         
-        // Count users by status from their promotions
-        let activeUsers = 0;
-        let expiredUsers = 0;
+        // Count promotions by status
+        let activePromotionsCount = 0;
+        let expiredPromotionsCount = 0;
         
         promotionUsers.forEach(user => {
             user.promotions?.forEach(promo => {
-                if (promo.status === 'active') activeUsers++;
-                if (promo.status === 'expired') expiredUsers++;
+                const isExpired = promo.computed_status === 'expired' || promo.status === 'expired';
+                const isCancelled = promo.status === 'cancelled';
+                const isActive = promo.status === 'active' && !isExpired && !isCancelled;
+
+                 if (isActive) activePromotionsCount++;
+                 if (isExpired) expiredPromotionsCount++;
             });
         });
 
@@ -66,14 +70,14 @@ export function PromotionPage() {
             {
                 id: "active-promotions",
                 label: "Active Promotions",
-                value: activeUsers,
+                value: activePromotionsCount,
                 icon: ExpiredPromotionsIcon,
                 highlighted: false,
             },
             {
                 id: "expired-promotions",
                 label: "Expired Promotions",
-                value: expiredUsers,
+                value: expiredPromotionsCount,
                 icon: RecentExpiredIcon,
                 highlighted: false,
             },

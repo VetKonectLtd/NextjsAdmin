@@ -4,11 +4,56 @@ import { Input } from "@/components/ui/input";
 import { Search, Filter, Check, X, AlertCircle, Loader2, Trash2, ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
 import { useForumStore } from "@/stores/use-forum-store";
 import { DatePill } from "@/components/ui/date-pill";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export function Content() {
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedId, setExpandedId] = useState<number | null>(null);
     const { forums, fetchForums, searchForums, approveForum, rejectForum, deleteForum, isLoading, error } = useForumStore();
+
+    // Confirmation modal state
+    const [confirmationModal, setConfirmationModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        description: string;
+        action: () => Promise<void>;
+        isLoading: boolean;
+        variant?: "danger" | "warning" | "info";
+        confirmLabel?: string;
+    }>({
+        isOpen: false,
+        title: "",
+        description: "",
+        action: async () => {},
+        isLoading: false,
+        variant: "danger"
+    });
+
+    const closeConfirmation = () => {
+        if (!confirmationModal.isLoading) {
+            setConfirmationModal(prev => ({ ...prev, isOpen: false }));
+        }
+    };
+
+    const handleDelete = (id: number) => {
+        setConfirmationModal({
+            isOpen: true,
+            title: "Delete Forum Post",
+            description: "Are you sure you want to delete this forum post? This action cannot be undone.",
+            confirmLabel: "Delete",
+            variant: "danger",
+            isLoading: false,
+            action: async () => {
+                setConfirmationModal(prev => ({ ...prev, isLoading: true }));
+                try {
+                    await deleteForum(id);
+                    setConfirmationModal(prev => ({ ...prev, isOpen: false, isLoading: false }));
+                } catch {
+                    setConfirmationModal(prev => ({ ...prev, isLoading: false }));
+                }
+            }
+        });
+    };
 
     useEffect(() => {
         fetchForums();
@@ -199,7 +244,7 @@ export function Content() {
                                             size="sm"
                                             variant="destructive"
                                             className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
-                                            onClick={(e) => { e.stopPropagation(); deleteForum(content.id); }}
+                                            onClick={(e) => { e.stopPropagation(); handleDelete(content.id); }}
                                         >
                                             <Trash2 className="h-4 w-4 mr-1" />
                                             Delete
@@ -232,6 +277,17 @@ export function Content() {
                     </Button>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={confirmationModal.isOpen}
+                onClose={closeConfirmation}
+                onConfirm={confirmationModal.action}
+                title={confirmationModal.title}
+                description={confirmationModal.description}
+                confirmLabel={confirmationModal.confirmLabel}
+                variant={confirmationModal.variant}
+                isLoading={confirmationModal.isLoading}
+            />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2, AlertCircle, Activity } from "lucide-react";
+import { Loader2, AlertCircle, Activity } from "lucide-react";
 import { useActivityStore } from "@/stores/use-activity-store";
 import { DatePill } from "@/components/ui/date-pill";
 
@@ -24,19 +24,7 @@ export function Activities() {
         fetchActivities();
     }, [fetchActivities]);
 
-    const handleSearch = () => {
-        if (searchQuery.trim()) {
-            searchActivities(searchQuery);
-        } else {
-            fetchActivities();
-        }
-    };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
 
     if (isLoading && !activities) {
         return (
@@ -67,22 +55,12 @@ export function Activities() {
                     type="text"
                     placeholder="Search activities..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        searchActivities(e.target.value);
+                    }}
                     className="flex-1"
                 />
-                <Button 
-                    className="bg-green-500 hover:bg-green-600 text-white"
-                    onClick={handleSearch}
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                        <Search className="h-4 w-4 mr-2" />
-                    )}
-                    Search
-                </Button>
             </div>
 
             {/* Activity List */}

@@ -4,6 +4,7 @@ import { activityService } from "@/services/activity-service";
 
 interface ActivityState {
   activities: Activity[] | null;
+  allActivities: Activity[] | null;
   isLoading: boolean;
   error: string | null;
 
@@ -16,8 +17,9 @@ const formatError = (error: unknown): string => {
   return "An unexpected error occurred";
 };
 
-export const useActivityStore = create<ActivityState>((set) => ({
+export const useActivityStore = create<ActivityState>((set, get) => ({
   activities: null,
+  allActivities: null,
   isLoading: false,
   error: null,
 
@@ -25,7 +27,11 @@ export const useActivityStore = create<ActivityState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await activityService.getActivities();
-      set({ activities: response.activities, isLoading: false });
+      set({
+        activities: response.activities,
+        allActivities: response.activities,
+        isLoading: false,
+      });
     } catch (error) {
       const errorMessage = formatError(error);
       set({ error: errorMessage, isLoading: false });
@@ -33,13 +39,28 @@ export const useActivityStore = create<ActivityState>((set) => ({
   },
 
   searchActivities: async (query: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await activityService.searchActivities(query);
-      set({ activities: response.activities, isLoading: false });
-    } catch (error) {
-      const errorMessage = formatError(error);
-      set({ error: errorMessage, isLoading: false });
+    // Client-side filtering
+    const { allActivities } = get();
+    const allData = allActivities || [];
+
+    if (!query.trim()) {
+      set({ activities: allData });
+      return;
     }
+
+    const lowerQuery = query.toLowerCase();
+    const filtered = allData.filter((item: Activity) => {
+      const title = item.title?.toLowerCase() || "";
+      const detail = item.detail?.toLowerCase() || "";
+      const action = item.action?.toLowerCase() || "";
+
+      return (
+        title.includes(lowerQuery) ||
+        detail.includes(lowerQuery) ||
+        action.includes(lowerQuery)
+      );
+    });
+
+    set({ activities: filtered });
   },
 }));

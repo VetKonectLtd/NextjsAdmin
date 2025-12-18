@@ -65,7 +65,7 @@ export function BlogComponent() {
         publishBlog,
         archiveBlog,
         rejectBlog,
-        flagBlog
+        flagComment
     } = useBlogStore();
 
     // Fetch blogs on mount and tab change
@@ -198,8 +198,27 @@ export function BlogComponent() {
         });
     };
 
-    const handleFlag = async (blog: Blog, flag: BlogFlagType) => {
-        await flagBlog(blog.id, flag);
+    const handleFlagComment = (commentId: number, flag: BlogFlagType) => {
+        const isFlagging = flag !== 'none';
+        setConfirmationModal({
+            isOpen: true,
+            title: isFlagging ? "Flag Comment" : "Unflag Comment",
+            description: isFlagging 
+                ? "Are you sure you want to flag this comment?" 
+                : "Are you sure you want to remove the flag from this comment?",
+            confirmLabel: isFlagging ? "Flag" : "Unflag",
+            variant: isFlagging ? "danger" : "info",
+            isLoading: false,
+            action: async () => {
+                setConfirmationModal(prev => ({ ...prev, isLoading: true }));
+                try {
+                    await flagComment(commentId, flag);
+                    setConfirmationModal(prev => ({ ...prev, isOpen: false, isLoading: false }));
+                } catch {
+                    setConfirmationModal(prev => ({ ...prev, isLoading: false }));
+                }
+            }
+        });
     };
 
     const handleRestore = (blog: Blog) => {
@@ -345,27 +364,6 @@ export function BlogComponent() {
                                     Archive
                                 </Button>
                             )}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="icon">
-                                        <Flag className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => handleFlag(viewingBlog, 'none')}>
-                                        Clear Flag
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleFlag(viewingBlog, 'spam')}>
-                                        Flag as Spam
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleFlag(viewingBlog, 'abuse')}>
-                                        Flag as Abuse
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleFlag(viewingBlog, 'hidden')}>
-                                        Hide
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
                         </div>
                     </div>
 
@@ -376,43 +374,55 @@ export function BlogComponent() {
                             {viewingBlog.comments.length === 0 ? (
                                 <p className="text-gray-500 text-center py-8">No comments yet</p>
                             ) : (
-                                viewingBlog.comments.map((comment) => (
-                                    <div
-                                        key={comment.id}
-                                        className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
-                                    >
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
-                                                    {comment.author.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="font-semibold text-gray-900">{comment.author}</p>
-                                                        {comment.flagged && (
-                                                            <Flag className="h-4 w-4 text-red-600" />
-                                                        )}
+                                viewingBlog.comments.map((comment) => {
+                                    const authorName = typeof comment.author === 'object' && comment.author !== null && 'name' in comment.author
+                                        ? comment.author.name
+                                        : String(comment.author || 'Unknown');
+
+                                    return (
+                                        <div
+                                            key={comment.id}
+                                            className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                                        >
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
+                                                        {authorName.charAt(0)}
                                                     </div>
-                                                    <p className="text-xs text-gray-500">{comment.date}</p>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="font-semibold text-gray-900">{authorName}</p>
+                                                            {comment.flag !== 'none' && (
+                                                                <Flag className="h-4 w-4 text-red-600" />
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-gray-500">{new Date(comment.created_at).toLocaleDateString()}</p>
+                                                    </div>
                                                 </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+
+                                                        {comment.flag === 'none' ? (
+                                                            <DropdownMenuItem onClick={() => handleFlagComment(comment.id, 'spam')} className="text-red-600">
+                                                                Flag Comment
+                                                            </DropdownMenuItem>
+                                                        ) : (
+                                                            <DropdownMenuItem onClick={() => handleFlagComment(comment.id, 'none')}>
+                                                                Unflag Comment
+                                                            </DropdownMenuItem>
+                                                        )}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                        <MoreVertical className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem>Send a message to the person</DropdownMenuItem>
-                                                    <DropdownMenuItem className="text-red-600">
-                                                        Flag comment
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <p className="text-gray-700 text-sm leading-relaxed">{comment.comment}</p>
                                         </div>
-                                        <p className="text-gray-700 text-sm leading-relaxed">{comment.text}</p>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
                     </div>
@@ -477,6 +487,12 @@ export function BlogComponent() {
                                 <img
                                     src={URL.createObjectURL(imageFile)}
                                     alt="Uploaded"
+                                    className="w-full h-full object-cover rounded-lg"
+                                />
+                            ) : editingBlog?.picture_url ? (
+                                <img
+                                    src={editingBlog.picture_url}
+                                    alt="Current"
                                     className="w-full h-full object-cover rounded-lg"
                                 />
                             ) : (
@@ -576,9 +592,9 @@ export function BlogComponent() {
                             <Search className="h-4 w-4 mr-2" />
                             Search
                         </Button>
-                        <Button variant="outline" size="icon" className="border-gray-300 hidden sm:flex">
+                        {/* <Button variant="outline" size="icon" className="border-gray-300 hidden sm:flex">
                             <Filter className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                     </div>
 
                     {/* Blog Posts Table */}
