@@ -99,12 +99,21 @@ export function Veterinarians() {
 
                         {/* Action Buttons */}
                         <div className="flex items-center gap-4">
-                            <Button 
-                                className="bg-green-500 hover:bg-green-600 text-white"
-                                onClick={() => useUserStore.getState().verifyUser(vet.id, 'doctor')}
-                            >
-                                Verify
-                            </Button>
+                            {vet.is_approved === "0" ? (
+                                <Button 
+                                    className="bg-green-500 hover:bg-green-600 text-white"
+                                    onClick={() => useUserStore.getState().verifyUser(vet.id, 'doctor')}
+                                >
+                                    Verify
+                                </Button>
+                            ) : (
+                                <Button 
+                                    variant="outline" 
+                                    className="text-green-600 border-green-600 cursor-default hover:bg-transparent hover:text-green-600"
+                                >
+                                    Verified
+                                </Button>
+                            )}
                             <DatePill date={vet.created_at} />
                         </div>
                     </div>

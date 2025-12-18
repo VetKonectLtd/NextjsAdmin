@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Loader2, Check, AlertCircle, Building2 } from "lucide-react";
+import { ChevronDown, Loader2, AlertCircle, Building2 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 
@@ -96,29 +96,20 @@ export function VeterinaryClinic() {
 
                         {/* Action Button */}
                         <div className="flex items-center gap-4">
-                            {clinic.availability === "1" ? (
-                                <>
-                                    <Button
-                                        variant="destructive"
-                                        className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
-                                        disabled
-                                    >
-                                        Disable
-                                    </Button>
-                                    <Button className="bg-green-500 hover:bg-green-600 text-white">
-                                        <Check className="h-4 w-4 mr-2" />
-                                        Approved
-                                    </Button>
-                                </>
+                            {clinic.is_approved === "0" ? (
+                                <Button 
+                                    className="bg-green-500 hover:bg-green-600 text-white"
+                                    onClick={() => useUserStore.getState().verifyUser(clinic.id, 'veterinary-clinic')}
+                                >
+                                    Verify
+                                </Button>
                             ) : (
-                                <>
-                                    <Button 
-                                        className="bg-green-500 hover:bg-green-600 text-white"
-                                        onClick={() => useUserStore.getState().verifyUser(clinic.id, 'veterinary-clinic')}
-                                    >
-                                        Verify
-                                    </Button>
-                                </>
+                                <Button 
+                                    variant="outline" 
+                                    className="text-green-600 border-green-600 cursor-default hover:bg-transparent hover:text-green-600"
+                                >
+                                    Verified
+                                </Button>
                             )}
                             <DatePill date={clinic.created_at} />
                         </div>

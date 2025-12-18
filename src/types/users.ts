@@ -59,6 +59,7 @@ export interface Veterinarian {
   latitude: string;
   role: string;
   availability: string;
+  is_approved: string;
   created_at: string;
   average_rating: number;
   user: BaseUser;
@@ -76,6 +77,7 @@ export interface Paraprofessional {
   latitude: string;
   role: string;
   availability: string;
+  is_approved: string;
   created_at: string;
   average_rating: number;
   user: BaseUser;
@@ -93,6 +95,7 @@ export interface Clinic {
   latitude: string;
   role: string;
   availability: string;
+  is_approved: string;
   created_at: string;
   average_rating: number;
   user: BaseUser;
