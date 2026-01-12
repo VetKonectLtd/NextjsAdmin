@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Loader2, AlertCircle, Stethoscope, Eye } from "lucide-react";
+import { ChevronDown, Loader2, AlertCircle, Stethoscope, Eye, Check } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 import {
@@ -245,7 +245,8 @@ export function Veterinarians() {
 											variant="outline"
 											className="text-green-600 border-green-600 cursor-default hover:bg-transparent"
 										>
-											Verified
+											Verified 
+                                            <Check className="ml-1 font-extrabold size-6" />
 										</Button>
 										<Button
 											variant="outline"
