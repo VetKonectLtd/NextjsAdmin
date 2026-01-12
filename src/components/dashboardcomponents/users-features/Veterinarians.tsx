@@ -231,13 +231,13 @@ export function Veterinarians() {
 											Verify
 										</Button>
 
-										<Button
+										{/* <Button
 											variant="outline"
 											className="text-red-600 border-red-600 hover:bg-red-50"
 											onClick={() => openRejectModal(vet.id)}
 										>
 											Reject
-										</Button>
+										</Button> */}
 									</>
 								) : (
 									<>
