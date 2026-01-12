@@ -7,6 +7,7 @@ import {
 	AlertCircle,
 	UserCheck,
 	Eye,
+    Check,
 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
@@ -262,6 +263,7 @@ export function Paraprofessionals() {
 											className="text-green-600 border-green-600 cursor-default hover:bg-transparent"
 										>
 											Verified
+                                            <Check className="ml-1 font-extrabold size-6" />
 										</Button>
 										<Button
 											variant="outline"
