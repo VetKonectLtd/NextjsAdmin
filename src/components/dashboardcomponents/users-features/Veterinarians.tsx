@@ -200,6 +200,7 @@ export function Veterinarians() {
 														? "Verified"
 														: "Pending"}
 												</p>
+                                                <p><strong>Practice License Number:</strong> {selectedVet.practice_license_num}</p>
 												<p>
 													<strong>Joined:</strong> {selectedVet.created_at}
 												</p>
