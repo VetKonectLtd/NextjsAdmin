@@ -21,6 +21,12 @@ import { useBlogStore } from "@/stores/use-blog-store";
 import type { Blog, BlogFlagType } from "@/types/blog";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+
+
+
+
 export function BlogComponent() {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("create");
@@ -46,7 +52,7 @@ export function BlogComponent() {
         isOpen: false,
         title: "",
         description: "",
-        action: async () => {},
+        action: async () => { },
         isLoading: false,
         variant: "danger"
     });
@@ -98,7 +104,7 @@ export function BlogComponent() {
         if (!postTitle.trim() || !postText.trim() || !postType || !category) {
             return;
         }
-        
+
         try {
             if (editingBlog) {
                 await updateBlog(editingBlog.id, {
@@ -174,9 +180,9 @@ export function BlogComponent() {
             archive: { title: "Archive Blog", description: "This will hide the blog from users.", label: "Archive", variant: "warning" as const },
             reject: { title: "Reject Blog", description: "This will reject the blog submission.", label: "Reject", variant: "danger" as const }
         };
-        
+
         const config = actionLabels[action];
-        
+
         setConfirmationModal({
             isOpen: true,
             title: config.title,
@@ -203,8 +209,8 @@ export function BlogComponent() {
         setConfirmationModal({
             isOpen: true,
             title: isFlagging ? "Flag Comment" : "Unflag Comment",
-            description: isFlagging 
-                ? "Are you sure you want to flag this comment?" 
+            description: isFlagging
+                ? "Are you sure you want to flag this comment?"
                 : "Are you sure you want to remove the flag from this comment?",
             confirmLabel: isFlagging ? "Flag" : "Unflag",
             variant: isFlagging ? "danger" : "info",
@@ -247,6 +253,34 @@ export function BlogComponent() {
         }
     };
 
+    const editor = useEditor({
+        extensions: [
+            StarterKit.configure({
+                bulletList: {
+                    HTMLAttributes: { class: "list-disc ml-6 my-2" },
+                },
+                orderedList: {
+                    HTMLAttributes: { class: "list-decimal ml-6 my-2" },
+                },
+                listItem: {
+                    HTMLAttributes: { class: "mb-1" },
+                },
+            }),
+        ],
+        content: postText,
+        onUpdate({ editor }) {
+            setPostText(editor.getHTML()); // store HTML
+        },
+    });
+
+
+    useEffect(() => {
+        if (editor && editingBlog) {
+            editor.commands.setContent(editingBlog.content || "");
+        }
+    }, [editor, editingBlog]);
+
+
     // View Screen - Show detailed blog post view
     if (viewingBlog !== null) {
         return (
@@ -269,9 +303,9 @@ export function BlogComponent() {
                     <div className="space-y-3 sm:space-y-4">
                         {/* Blog Image */}
                         {viewingBlog.picture_url ? (
-                            <img 
-                                src={viewingBlog.picture_url} 
-                                alt={viewingBlog.title} 
+                            <img
+                                src={viewingBlog.picture_url}
+                                alt={viewingBlog.title}
                                 className="w-full h-64 object-cover rounded-lg"
                             />
                         ) : (
@@ -314,9 +348,10 @@ export function BlogComponent() {
                         </div>
 
                         {/* Content */}
-                        <p className="text-gray-700 leading-relaxed">
-                            {viewingBlog.content}
-                        </p>
+                        <div
+                            className="prose prose-sm max-w-none whitespace-pre-wrap"
+                            dangerouslySetInnerHTML={{ __html: viewingBlog.content }}
+                        />
 
                         {/* Engagement Metrics */}
                         <div className="flex items-center gap-6 pt-4 border-t border-gray-200">
@@ -516,14 +551,51 @@ export function BlogComponent() {
                     </div>
 
                     {/* Post Text Area */}
-                    <div>
-                        <textarea
-                            placeholder="Type in the post content"
-                            value={postText}
-                            onChange={(e) => setPostText(e.target.value)}
-                            className="w-full h-32 px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                    
+                    <div className="border rounded-md p-3 min-h-[100px] flex flex-col">
+                        {/* Toolbar */}
+                        <div className="flex gap-2 mb-2 border-b pb-2 flex-shrink-0">
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => editor?.chain().focus().toggleBold().run()}
+                                className={editor?.isActive("bold") ? "bg-gray-200" : ""}
+                            >
+                                B
+                            </Button>
+
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => editor?.chain().focus().toggleItalic().run()}
+                                className={editor?.isActive("italic") ? "bg-gray-200 italic uppercase" : "italic uppercase"}
+                            >
+                                I
+                            </Button>
+
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                            >
+                                • List
+                            </Button>
+                        </div>
+
+
+
+                        {/* Editor */}
+                        <EditorContent
+                            editor={editor}
+                            className="max-w-none flex-1 p-3 overflow-y-auto min-h-[140px]"
                         />
+
                     </div>
+
+
 
                     {/* Dropdowns */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -629,15 +701,17 @@ export function BlogComponent() {
                                         >
                                             {/* Title */}
                                             <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                                                <div className="w-8 h-8 p-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
                                                     {blog.title.charAt(0)}
                                                 </div>
                                                 <span className="text-sm text-gray-900 truncate">{blog.title}</span>
                                             </div>
 
                                             {/* Content */}
-                                            <div className="text-sm text-gray-600 truncate">{blog.content.substring(0, 30)}...</div>
-
+                                            <div
+                                                className="prose prose-sm max-w-none whitespace-pre-wrap"
+                                                dangerouslySetInnerHTML={{ __html: blog.content.substring(0, 10) + '...' }}
+                                            />
                                             {/* Status */}
                                             <div>
                                                 <span className={cn(
