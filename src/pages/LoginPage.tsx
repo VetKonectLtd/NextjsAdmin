@@ -35,7 +35,7 @@ export function LoginPage() {
         {/* Logo / Branding */}
         <div className="text-center mb-8 flex flex-col items-center">
           <LogoIcon className="w-16 h-16 mb-3" />
-          <h1 className="text-3xl font-bold text-green-600">Vet Konnect</h1>
+          <h1 className="text-3xl font-bold text-green-600">Vet Konect</h1>
           <p className="text-gray-500 mt-2">Admin Dashboard</p>
         </div>
 
