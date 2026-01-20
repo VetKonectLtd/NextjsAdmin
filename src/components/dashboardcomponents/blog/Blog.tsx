@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Eye, Edit, ArrowLeft, MoreVertical, Flag, Loader2 } from "lucide-react";
+import { Search, Filter, Eye, Edit, ArrowLeft, MoreVertical, Flag, Loader2, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { blogTabs, postTypeOptions, categoryOptions } from "@/constants/blog";
 import {
@@ -23,7 +23,7 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-
+import Image from "@tiptap/extension-image";
 
 
 
@@ -38,6 +38,8 @@ export function BlogComponent() {
     const [viewingBlog, setViewingBlog] = useState<Blog | null>(null);
     const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const editorImageInputRef = useRef<HTMLInputElement>(null);
+
 
     // Confirmation modal state
     const [confirmationModal, setConfirmationModal] = useState<{
@@ -253,6 +255,25 @@ export function BlogComponent() {
         }
     };
 
+    const handleEditorImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !editor) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            editor
+                .chain()
+                .focus()
+                .setImage({ src: reader.result as string })
+                .run();
+        };
+        reader.readAsDataURL(file);
+
+        // reset input so same image can be re-selected
+        e.target.value = "";
+    };
+
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -264,6 +285,13 @@ export function BlogComponent() {
                 },
                 listItem: {
                     HTMLAttributes: { class: "mb-1" },
+                },
+            }),
+            Image.configure({
+                inline: false,
+                allowBase64: true, // important for local uploads
+                HTMLAttributes: {
+                    class: "rounded-lg max-w-full my-4",
                 },
             }),
         ],
@@ -551,7 +579,7 @@ export function BlogComponent() {
                     </div>
 
                     {/* Post Text Area */}
-                    
+
                     <div className="border rounded-md p-3 min-h-[100px] flex flex-col">
                         {/* Toolbar */}
                         <div className="flex gap-2 mb-2 border-b pb-2 flex-shrink-0">
@@ -583,14 +611,30 @@ export function BlogComponent() {
                             >
                                 • List
                             </Button>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => editorImageInputRef.current?.click()}
+                            >
+                                <ImageIcon className="h-4 w-4" />
+                            </Button>
                         </div>
 
+                        {/* Hidden Image Input */}
+                        <input
+                            ref={editorImageInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleEditorImageUpload(e)}
+                        />
 
 
                         {/* Editor */}
                         <EditorContent
                             editor={editor}
-                            className="max-w-none flex-1 p-3 overflow-y-auto min-h-[140px]"
+                            className="max-w-none border-none focus:outline-8 flex-1 p-3 overflow-y-auto min-h-[140px]"
                         />
 
                     </div>

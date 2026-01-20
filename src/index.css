@@ -79,3 +79,7 @@
     display: none;
   }
 }
+
+.ProseMirror-focused {
+  outline: none;
+}
