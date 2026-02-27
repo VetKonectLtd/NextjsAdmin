@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
 import { Check, X, Loader2 } from "lucide-react";
@@ -6,12 +6,14 @@ import { cn } from "@/lib/utils";
 
 import { ManageButton } from "@/components/shared/ManageButton";
 import { useSubscriptionStore } from "@/stores/use-subscription-store";
-import { CreateSubscriptionModal } from "./CreateSubscriptionModal";
+import { useNavigate } from "react-router-dom";
+// import { CreateSubscriptionModal } from "./CreateSubscriptionModal";
 
 
 export function Subscription() {
     // const [searchQuery, setSearchQuery] = useState("");
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const navigate = useNavigate();
     const { 
         subscribers, 
         fetchSubscribersByType, 
@@ -57,14 +59,15 @@ export function Subscription() {
             {/* Manage Subscription Button */}
             <ManageButton 
                 label="Manage Subscription" 
-                onClick={() => setIsCreateModalOpen(true)}
+                classes="px-6"
+                onClick={() => navigate("/subscription/manage")}
             />
 
             {/* Create Subscription Modal */}
-            <CreateSubscriptionModal 
+            {/* <CreateSubscriptionModal 
                 isOpen={isCreateModalOpen} 
                 onClose={() => setIsCreateModalOpen(false)} 
-            />
+            /> */}
 
             {/* Subscription Type Tabs */}
             <nav className="bg-white border-b border-gray-200 px-6 py-4">
@@ -187,3 +190,4 @@ export function Subscription() {
         </div>
     );
 }
+

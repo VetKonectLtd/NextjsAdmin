@@ -1,54 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal } from '@/components/ui/modal';
 import FormInput from '@/components/ui/form-input';
 import FormSelect from '@/components/ui/form-select';
 import { Button } from '@/components/ui/button';
 import { useSubscriptionStore } from '@/stores/use-subscription-store';
-import type { CreateSubscriptionPayload } from '@/types/subscription';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 
 interface CreateSubscriptionModalProps {
     isOpen: boolean;
     onClose: () => void;
+    editingPlan?: any | null;
 }
 
-export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionModalProps) {
-    const { createPlan, isLoading } = useSubscriptionStore();
-    
-    // Initial state with default values
-    const [formData, setFormData] = useState<CreateSubscriptionPayload>({
+interface CreateSubscriptionPayload {
+    subscription_title: string;
+    currency: string;
+    price: number;
+    date_option: 'Days' | 'Months';
+    duration: string;
+    features: string[];
+}
+
+export function CreateSubscriptionModal({ isOpen, onClose, editingPlan }: CreateSubscriptionModalProps) {
+    const { createPlan, isLoading, updatePlan, fetchPlans } = useSubscriptionStore();
+
+    // Initial state with simplified structure
+    const initialFormData: CreateSubscriptionPayload = {
         subscription_title: '',
-        subscription_code: '',
         currency: 'NGN',
         price: 0,
-        vat: '0%',
-        date_option: 'Days',
-        duration: 30,
-        case_record: 0,
-        profile_approval: 'No Approval Badge',
-        contact_info: false,
-        direct_message: false,
-        feed_calculator: false,
-        disease_predictor: false,
-        store: 0,
-        no_of_products: 0,
-        customer_support: false,
-    });
+        date_option: "Months",
+        duration: '30',
+        features: [],
+    };
+
+    const [formData, setFormData] = useState<CreateSubscriptionPayload>(initialFormData);
+
+    useEffect(() => {
+        if (editingPlan) {
+            setFormData({
+                subscription_title: editingPlan.subscription_title,
+                currency: editingPlan.currency,
+                price: editingPlan.price,
+                date_option: editingPlan.date_option,
+                duration: editingPlan.duration,
+                features: editingPlan.features || [],
+            });
+        } else {
+            setFormData(initialFormData);
+        }
+    }, [editingPlan]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
-        
+
         setFormData(prev => ({
             ...prev,
             [name]: type === 'number' ? Number(value) : value
-        }));
-    };
-
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: checked
         }));
     };
 
@@ -59,41 +67,67 @@ export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionM
         }));
     };
 
+    const handleAddFeature = () => {
+        setFormData(prev => ({
+            ...prev,
+            features: [...prev.features, '']
+        }));
+    };
+
+    const handleFeatureChange = (index: number, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            features: prev.features.map((feature, i) => (i === index ? value : feature))
+        }));
+    };
+
+    const handleRemoveFeature = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            features: prev.features.filter((_, i) => i !== index)
+        }));
+    };
+
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         try {
-            await createPlan(formData);
+            if (editingPlan) {
+                await updatePlan(editingPlan.id, formData);
+            } else {
+                await createPlan(formData);
+            }
+
+            setFormData(initialFormData);
+            await fetchPlans();
             onClose();
-            // Reset form? maybe later or on next open
         } catch {
-            // Error handled by store
+            // handled by store
         }
     };
 
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Create Subscription Plan" className="max-w-4xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
-                
-                {/* Basic Info Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                        label="Plan Title"
-                        name="subscription_title"
-                        value={formData.subscription_title}
-                        onChange={handleChange}
-                        isRequired
-                    />
-                    <FormInput
-                        label="Plan Code"
-                        name="subscription_code"
-                        value={formData.subscription_code}
-                        onChange={handleChange}
-                        isRequired
-                    />
-                </div>
 
-                {/* Pricing Section */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+    return (
+        <Modal isOpen={isOpen}
+            onClose={onClose}
+            title={editingPlan ? "Update Subscription Plan" : "Create Subscription Plan"}
+            className="max-w-2xl">
+            <form onSubmit={handleSubmit} className="space-y-6">
+
+                {/* Basic Info */}
+                <FormInput
+                    label="Plan Title"
+                    name="subscription_title"
+                    value={formData.subscription_title}
+                    onChange={handleChange}
+                    isRequired
+                />
+
+                {/* Pricing */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormInput
                         label="Currency"
                         name="currency"
@@ -110,22 +144,17 @@ export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionM
                         isRequired
                         min={0}
                     />
-                    <FormInput
-                        label="VAT"
-                        name="vat"
-                        value={formData.vat || ''}
-                        onChange={handleChange}
-                    />
                 </div>
 
-                {/* Duration Section */}
+                {/* Duration */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormSelect
                         label="Date Option"
                         isRequired
                         options={[
                             { value: 'Days', label: 'Days' },
-                            { value: 'Months', label: 'Months' }
+                            { value: 'Months', label: 'Months' },
+                            { value: 'years', label: 'Years' }
                         ]}
                         value={formData.date_option}
                         onChange={(value) => handleSelectChange('date_option', value)}
@@ -133,7 +162,6 @@ export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionM
                     <FormInput
                         label="Duration"
                         name="duration"
-                        type="number"
                         value={formData.duration}
                         onChange={handleChange}
                         isRequired
@@ -141,65 +169,45 @@ export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionM
                     />
                 </div>
 
-                {/* Limits & Quotas */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormInput
-                        label="Case Records Limit"
-                        name="case_record"
-                        type="number"
-                        value={formData.case_record || 0}
-                        onChange={handleChange}
-                    />
-                    <FormInput
-                        label="Store Limit"
-                        name="store"
-                        type="number"
-                        value={formData.store || 0}
-                        onChange={handleChange}
-                    />
-                    <FormInput
-                        label="Products Limit"
-                        name="no_of_products"
-                        type="number"
-                        value={formData.no_of_products || 0}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* Profile Badge */}
-                <FormSelect
-                    label="Profile Approval Badge"
-                    options={[
-                        { value: 'No Approval Badge', label: 'No Approval Badge' },
-                        { value: 'Approved Badge', label: 'Approved Badge' }
-                    ]}
-                    value={formData.profile_approval}
-                    onChange={(value) => handleSelectChange('profile_approval', value)}
-                />
-
-                {/* Features Toggles */}
+                {/* Features */}
                 <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-700">Features</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {[
-                            { key: 'contact_info', label: 'Contact Info' },
-                            { key: 'direct_message', label: 'Direct Message' },
-                            { key: 'feed_calculator', label: 'Feed Calculator' },
-                            { key: 'disease_predictor', label: 'Disease Predictor' },
-                            { key: 'customer_support', label: 'Customer Support' },
-                        ].map((feature) => (
-                            <label key={feature.key} className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    name={feature.key}
-                                    checked={formData[feature.key as keyof CreateSubscriptionPayload] as boolean}
-                                    onChange={handleCheckboxChange}
-                                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                                />
-                                <span className="text-sm text-gray-700">{feature.label}</span>
-                            </label>
-                        ))}
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-gray-700">Features</label>
+                        <button
+                            type="button"
+                            onClick={handleAddFeature}
+                            className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Add Feature
+                        </button>
                     </div>
+
+                    {formData.features.length === 0 ? (
+                        <p className="text-sm text-gray-500 italic">No features added yet. Click "Add Feature" to get started.</p>
+                    ) : (
+                        <div className="space-y-2">
+                            {formData.features.map((feature, index) => (
+                                <div key={index} className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={feature}
+                                        onChange={(e) => handleFeatureChange(index, e.target.value)}
+                                        placeholder={`Feature ${index + 1}`}
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveFeature(index)}
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                        title="Remove feature"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t">
@@ -210,10 +218,10 @@ export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionM
                         {isLoading ? (
                             <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Creating...
+                                {editingPlan ? "Updating..." : "Creating..."}
                             </>
                         ) : (
-                            'Create Plan'
+                            editingPlan ? "Update Plan" : "Create Plan"
                         )}
                     </Button>
                 </div>
@@ -221,3 +229,4 @@ export function CreateSubscriptionModal({ isOpen, onClose }: CreateSubscriptionM
         </Modal>
     );
 }
+

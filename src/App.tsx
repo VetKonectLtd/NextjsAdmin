@@ -10,6 +10,7 @@ import { BlogPage } from "@/pages/BlogPage";
 import { LoginPage } from "@/pages/LoginPage";
 import AccountPage from "@/pages/AccountPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import ManageSubscription from "./pages/ManageSubscription";
 
 function App() {
   return (
@@ -65,6 +66,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <SubscriptionPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/subscription/manage"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ManageSubscription />
               </Layout>
             </ProtectedRoute>
           }
