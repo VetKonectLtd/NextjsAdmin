@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
 import { Check, X, Loader2 } from "lucide-react";
@@ -62,12 +62,6 @@ export function Subscription() {
                 classes="px-6"
                 onClick={() => navigate("/subscription/manage")}
             />
-
-            {/* Create Subscription Modal */}
-            {/* <CreateSubscriptionModal 
-                isOpen={isCreateModalOpen} 
-                onClose={() => setIsCreateModalOpen(false)} 
-            /> */}
 
             {/* Subscription Type Tabs */}
             <nav className="bg-white border-b border-gray-200 px-6 py-4">

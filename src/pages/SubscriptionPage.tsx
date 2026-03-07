@@ -64,16 +64,19 @@ export function SubscriptionPage() {
             {
                 id: "plan-types",
                 label: "Plan Types",
-                value: new Set(plans.map(p => p.subscription_code)).size,
+                value: new Set(plans.map((p: any) => p.subscription_code)).size,
                 icon: RecentExpiredSubIcon,
                 highlighted: false,
             },
             {
                 id: "avg-duration",
                 label: "Avg Duration (days)",
-                value: plans.length > 0 
-                    ? Math.round(plans.reduce((sum, p) => sum + (p.date_option === 'Months' ? p.duration * 30 : p.duration), 0) / plans.length)
-                    : 0,
+                value: plans.reduce((sum, p) => {
+                    const duration = Number(p.duration);
+
+                    if (p.date_option === "Months") return sum + duration * 30;
+                    return sum + duration;
+                }, 0),
                 icon: FreemiumIcon,
                 highlighted: false,
             },
