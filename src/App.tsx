@@ -11,7 +11,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import AccountPage from "@/pages/AccountPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ManageSubscription from "./pages/ManageSubscription";
-import QuiteSearch from "./pages/QuickSearch";
+import QuickSearch from "./pages/QuickSearch";
 
 function App() {
   return (
@@ -66,7 +66,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <QuiteSearch />
+                <QuickSearch />
               </Layout>
             </ProtectedRoute>
           }

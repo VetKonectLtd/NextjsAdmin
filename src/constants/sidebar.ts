@@ -58,8 +58,8 @@ export const sidebarItems: SidebarItem[] = [
     path: "/account",
   },
   {
-    id: "quite-search",
-    label: "Quite Search",
+    id: "quick-search",
+    label: "Quick Search",
     icon: AccountIcon,
     path: "/search",
   },
