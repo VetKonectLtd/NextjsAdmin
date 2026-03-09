@@ -1,11 +1,11 @@
 import apiClient from "@/lib/api-client";
 
-export interface QuiteSearchResult {
+export interface QuickSearchResult {
 	to: string;
 	from: string;
 }
 
-export const quiteSearchService = {
+export const quickSearchService = {
 	getUsersFrom: async (from: string, to: string) => {
 		const response = await apiClient.get(`/v3/admin/filter-new-by-date`, {
 			params: { from, to },

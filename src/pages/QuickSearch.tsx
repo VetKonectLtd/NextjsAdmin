@@ -1,11 +1,11 @@
-import { useQuiteSearchStore } from "@/stores/use-quite-search-store";
+import { useQuickSearchStore } from "@/stores/use-quick-search-store";
 import { useState } from "react";
 
-const QuiteSearch = () => {
+const QuickSearch = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const { fetchUsersFromDate, users, isLoading } = useQuiteSearchStore();
+  const { fetchUsersFromDate, users, isLoading } = useQuickSearchStore();
 
   const handleSearch = async () => {
     if (!startDate || !endDate) return;
@@ -124,4 +124,4 @@ const QuiteSearch = () => {
   );
 };
 
-export default QuiteSearch;
+export default QuickSearch;

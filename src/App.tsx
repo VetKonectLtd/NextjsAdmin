@@ -11,7 +11,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import AccountPage from "@/pages/AccountPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ManageSubscription from "./pages/ManageSubscription";
-import QuiteSearch from "./pages/QuiteSearch";
+import QuiteSearch from "./pages/QuickSearch";
 
 function App() {
   return (

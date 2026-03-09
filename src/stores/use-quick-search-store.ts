@@ -1,18 +1,18 @@
 import { create } from "zustand";
 import { formatError } from "../lib/error-utils";
 import { toast } from "sonner";
-import { quiteSearchService } from "@/services/quite-search";
+import { quickSearchService } from "@/services/quick-search";
 
 
-interface QuiteSearchUser {
+interface QuickSearchUser {
   id: number;
   name: string;
   email: string;
   created_at: string;
 }
 
-interface QuiteSearchState {
-  users: QuiteSearchUser[] | null;
+interface QuickSearchState {
+  users: QuickSearchUser[] | null;
   isLoading: boolean;
   error: string | null;
 
@@ -20,7 +20,7 @@ interface QuiteSearchState {
   clearResults: () => void;
 }
 
-export const useQuiteSearchStore = create<QuiteSearchState>((set) => ({
+export const useQuickSearchStore = create<QuickSearchState>((set) => ({
   users: null,
   isLoading: false,
   error: null,
@@ -29,7 +29,7 @@ export const useQuiteSearchStore = create<QuiteSearchState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await quiteSearchService.getUsersFrom(from, to);
+      const response = await quickSearchService.getUsersFrom(from, to);
 
       set({
         users: response,
