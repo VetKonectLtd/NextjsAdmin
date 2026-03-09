@@ -58,6 +58,12 @@ export const sidebarItems: SidebarItem[] = [
     path: "/account",
   },
   {
+    id: "quite-search",
+    label: "Quite Search",
+    icon: AccountIcon,
+    path: "/search",
+  },
+  {
     id: "logout",
     label: "Logout",
     icon: LogoutIcon,
