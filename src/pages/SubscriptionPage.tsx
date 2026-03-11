@@ -29,8 +29,17 @@ export function SubscriptionPage() {
         const totalPlans = plans.length;
         const totalSubscribers = subscribers.length;
         // Count active subscribers (is_active could be boolean or 1/0)
-        const activeSubscribers = subscribers.filter(s => s.is_active === true || s.is_active === 1).length;
-        const inactiveSubscribers = subscribers.filter(s => s.is_active === false || s.is_active === 0).length;
+        const activeSubscribers = subscribers.filter((s:any) =>
+            s.subscription_beta?.some(
+                (sub: any) => sub.status === "active" || sub.status === 1
+            )
+        ).length;
+        const inactiveSubscribers = subscribers.filter((s:any) =>
+            s.subscription_beta?.some(
+                (sub: any) => sub.status === "inactive" || sub.status === 0
+            )
+        ).length;
+
 
         return [
             {

@@ -14,14 +14,14 @@ export function Subscription() {
     // const [searchQuery, setSearchQuery] = useState("");
     // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
-    const { 
-        subscribers, 
-        fetchSubscribersByType, 
+    const {
+        subscribers,
+        fetchSubscribersByType,
         isLoading,
         plans,
-        fetchPlans 
+        fetchPlans
     } = useSubscriptionStore();
-    
+
     // Initialize activeType with empty string, will be set when plans load
     const [activeType, setActiveType] = useState<string>("");
 
@@ -48,17 +48,18 @@ export function Subscription() {
         }
     }, [activeType, fetchSubscribersByType]);
 
-    const filteredSubscribers = subscribers.filter(subscriber => 
+    const filteredSubscribers = subscribers.filter(subscriber =>
         (subscriber.first_name?.toLowerCase() || "").includes("") ||
         (subscriber.last_name?.toLowerCase() || "").includes("") ||
         (subscriber.email?.toLowerCase() || "").includes("")
     );
 
+
     return (
         <div className="min-h-screen bg-white">
             {/* Manage Subscription Button */}
-            <ManageButton 
-                label="Manage Subscription" 
+            <ManageButton
+                label="Manage Subscription"
                 classes="px-6"
                 onClick={() => navigate("/subscription/manage")}
             />
@@ -67,8 +68,8 @@ export function Subscription() {
             <nav className="bg-white border-b border-gray-200 px-6 py-4">
                 <div className="flex items-center gap-6 overflow-x-auto">
                     {plans.map((plan) => {
-                         const typeId = plan.subscription_title.toLowerCase();
-                         return (
+                        const typeId = plan.subscription_title.toLowerCase();
+                        return (
                             <button
                                 key={plan.id}
                                 onClick={() => setActiveType(typeId)}
@@ -115,12 +116,15 @@ export function Subscription() {
                         No subscribers found for this plan.
                     </div>
                 ) : (
-                    filteredSubscribers.map((subscriber) => {
-                         const displayName = `${subscriber.first_name || ""} ${subscriber.last_name || ""}`.trim() || "User";
-                         const initials = displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
-                         const isUserActive = subscriber.is_active === 1 || subscriber.is_active === true;
-                         
-                         return (
+                    filteredSubscribers.map((subscriber: any) => {
+                        const displayName = `${subscriber.first_name || ""} ${subscriber.last_name || ""}`.trim() || "User";
+                        const initials = displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+                        
+                        const isUserActive = subscriber.subscription_beta?.some(
+                            (sub: any) => sub.status === "active" || sub.status === true
+                        );
+
+                        return (
                             <div
                                 key={subscriber.id}
                                 className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
@@ -128,9 +132,9 @@ export function Subscription() {
                                 {/* Avatar */}
                                 <div className="w-16 h-16 rounded-full border-2 border-green-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 overflow-hidden">
                                     {subscriber.photo ? (
-                                        <img 
-                                            src={subscriber.photo} 
-                                            alt={displayName} 
+                                        <img
+                                            src={subscriber.photo}
+                                            alt={displayName}
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
                                                 e.currentTarget.style.display = 'none';
@@ -148,6 +152,7 @@ export function Subscription() {
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-semibold text-gray-900 truncate">{displayName}</h3>
+                                    <h5 className="font-medium text-gray-600 truncate">{subscriber.email}</h5>
                                     <p className="text-sm text-gray-500 truncate">{subscriber.user_type || "User"}</p>
                                 </div>
 
@@ -159,7 +164,7 @@ export function Subscription() {
                                     >
                                         Disable
                                     </Button>
-                                    
+
                                     {isUserActive ? (
                                         <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-md">
                                             <Check className="h-4 w-4 text-green-600" />
@@ -171,7 +176,7 @@ export function Subscription() {
                                             <span className="text-sm font-medium text-red-600 hidden sm:inline">Inactive</span>
                                         </div>
                                     )}
-                                    
+
                                     <span className="text-xs text-gray-400 whitespace-nowrap hidden md:inline">
                                         {subscriber.last_seen ? new Date(subscriber.last_seen).toLocaleString() : "Offline"}
                                     </span>
