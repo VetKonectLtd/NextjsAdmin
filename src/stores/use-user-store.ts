@@ -20,6 +20,7 @@ interface UserState {
 	veterinarians: PaginatedResponse<Veterinarian> | null;
 	paraprofessionals: PaginatedResponse<Paraprofessional> | null;
 	clinics: PaginatedResponse<Clinic> | null;
+	listedClinics: PaginatedResponse<Clinic> | null;
 	stores: PaginatedResponse<Store> | null;
 	livestockFarmers: PaginatedResponse<LivestockFarmer> | null;
 	products: PaginatedResponse<Product> | null;
@@ -33,11 +34,13 @@ interface UserState {
 	fetchVeterinarians: (page?: number) => Promise<void>;
 	fetchParaprofessionals: (page?: number) => Promise<void>;
 	fetchClinics: (page?: number) => Promise<void>;
+	fetchListedClinics:(page?: number) => Promise<void>;
 	fetchStores: (page?: number) => Promise<void>;
 	fetchLivestockFarmers: (page?: number) => Promise<void>;
 	fetchProducts: (page?: number) => Promise<void>;
 	fetchOthers: (page?: number) => Promise<void>;
 	fetchVendors: (page?: number) => Promise<void>;
+
 	rejectUser: (
 		id: number,
 		type: "clinic" | "veterinary-clinic" | "doctor" | "paraprofessional",
@@ -60,6 +63,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 	veterinarians: null,
 	paraprofessionals: null,
 	clinics: null,
+	listedClinics:null,
 	stores: null,
 	livestockFarmers: null,
 	products: null,
@@ -104,6 +108,16 @@ export const useUserStore = create<UserState>((set, get) => ({
 		try {
 			const data = await userService.getClinics(page);
 			set({ clinics: data, isLoading: false });
+		} catch (error) {
+			set({ error: formatError(error), isLoading: false });
+		}
+	},
+
+	fetchListedClinics: async (page = 1) => {
+		set({ isLoading: true, error: null });
+		try {
+			const data = await userService.getListedClinics(page);
+			set({ listedClinics: data, isLoading: false });
 		} catch (error) {
 			set({ error: formatError(error), isLoading: false });
 		}

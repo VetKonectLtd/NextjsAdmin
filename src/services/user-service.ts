@@ -47,6 +47,13 @@ export const userService = {
 		return response.data.clinics;
 	},
 
+	getListedClinics: async (page = 1) => {
+		const response = await apiClient.get<ClinicsResponse>(
+			`/v3/admin/get-clinics?page=${page}`,
+		);
+		return response.data.clinics;
+	},
+
 	getStores: async (page = 1) => {
 		const response = await apiClient.get<StoresResponse>(
 			`/v3/admin/get-stores?page=${page}`,

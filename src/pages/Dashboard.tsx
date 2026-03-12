@@ -14,6 +14,7 @@ import { Products } from "@/components/dashboardcomponents/users-features/Produc
 import { Vendors } from "@/components/dashboardcomponents/users-features/Vendors";
 import { AfricaRegionWithStats } from "@/components/dashboardcomponents/shared/AfricaRegionWithStats";
 import { useAnalyticsStore } from "@/stores/use-analytics-store";
+import { Clinic } from "@/components/dashboardcomponents/users-features/Clinic";
 
 // Icons
 import TotalUsersIcon from "@/assets/icons/totalUsersIcon.svg?react";
@@ -105,6 +106,8 @@ export function Dashboard() {
                 return <Paraprofessionals />;
             case "veterinary-clinic":
                 return <VeterinaryClinic />;
+            case "clinic":
+                return <Clinic />;
             case "store":
                 return <Store />;
             case "livestock-farmers":

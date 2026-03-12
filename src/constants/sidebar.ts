@@ -140,6 +140,11 @@ export const userCategories = [
     label: "Veterinary Clinic",
     path: "/users/veterinary-clinic",
   },
+   {
+    id: "clinic",
+    label: "Clinic",
+    path: "/users/clinic",
+  },
   { id: "store", label: "Store", path: "/users/store" },
   {
     id: "livestock-farmers",
