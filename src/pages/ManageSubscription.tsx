@@ -60,10 +60,7 @@ const ManageSubscription = () => {
       <div className="space-y-4 mt-6">
         {plans.map((plan) => {
           const isExpanded = expandedId === plan.id;
-          const isDeactivated =
-            plan?.is_active === "0" ||
-            plan?.is_active === 0 ||
-            plan?.status === "inactive";
+          const isDeactivated ="true"
 
             console.log("Plan status:", plan, isDeactivated);
 
@@ -112,7 +109,7 @@ const ManageSubscription = () => {
 
                   <button
                     onClick={() => handleDeactivatePlan(plan.id)}
-                    disabled={isDeactivated}
+                    // disabled={isDeactivated}
                     className={`p-2 rounded-md ${
                       isDeactivated
                         ? "text-gray-300 cursor-not-allowed"
