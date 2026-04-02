@@ -15,7 +15,7 @@ export function Vendors() {
 
     if (isLoading && !vendors) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex min-h-[400px] items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-green-500" />
             </div>
         );
@@ -23,91 +23,95 @@ export function Vendors() {
 
     if (error && !vendors) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
-                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load vendors</h3>
-                <p className="text-sm text-gray-500 mb-4">{error}</p>
-                <Button onClick={() => fetchVendors()} className="bg-green-500 hover:bg-green-600 text-white">
+            <div className="flex min-h-[400px] flex-col items-center justify-center px-6 text-center">
+                <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">Failed to load vendors</h3>
+                <p className="mb-4 break-words text-sm text-gray-500">{error}</p>
+                <Button onClick={() => fetchVendors()} className="bg-green-500 text-white hover:bg-green-600">
                     Try Again
                 </Button>
             </div>
         );
     }
 
-    const filteredVendors = vendors?.data?.filter((vendor) => {
-        const searchLower = searchQuery.toLowerCase();
-        return (
-            vendor.user.first_name?.toLowerCase().includes(searchLower) ||
-            vendor.user.last_name?.toLowerCase().includes(searchLower) ||
-            vendor.role.toLowerCase().includes(searchLower)
-        );
-    }) || [];
+    const filteredVendors =
+        vendors?.data?.filter((vendor) => {
+            const searchLower = searchQuery.toLowerCase();
+            return (
+                vendor.user.first_name?.toLowerCase().includes(searchLower) ||
+                vendor.user.last_name?.toLowerCase().includes(searchLower) ||
+                vendor.role.toLowerCase().includes(searchLower)
+            );
+        }) || [];
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Search and Filter Section */}
-            <div className="px-6 py-6 flex items-center gap-4">
+            {/* Search */}
+            <div className="px-4 py-4 sm:px-6 sm:py-6">
                 <Input
                     type="text"
                     placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1"
+                    className="w-full"
                 />
             </div>
 
             {/* Vendor List */}
-            <div className="px-6 space-y-4">
+            <div className="space-y-4 px-4 pb-4 sm:px-6 sm:pb-6">
                 {filteredVendors.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <ShoppingBag className="h-12 w-12 text-gray-300 mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No vendors found</h3>
+                        <ShoppingBag className="mb-4 h-12 w-12 text-gray-300" />
+                        <h3 className="mb-2 text-lg font-semibold text-gray-900">No vendors found</h3>
                         <p className="text-sm text-gray-500">
                             {searchQuery ? "Try adjusting your search query" : "Vendors will appear here once registered"}
                         </p>
                     </div>
                 ) : (
                     filteredVendors.map((vendor) => (
-                    <div
-                        key={vendor.id}
-                        className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
-                    >
-                        {/* Avatar */}
-                        {vendor.user.profile?.profile_image_url ? (
-                            <img 
-                                src={vendor.user.profile.profile_image_url} 
-                                alt={vendor.user.first_name || "Vendor"} 
-                                className="w-16 h-16 rounded-full object-cover border-2 border-green-500"
-                            />
-                        ) : (
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                                {(vendor.user.first_name?.[0] || "") + (vendor.user.last_name?.[0] || "")}
+                        <div
+                            key={vendor.id}
+                            className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:gap-4"
+                        >
+                            {/* Avatar + Info */}
+                            <div className="flex min-w-0 flex-1 items-center gap-3">
+                                {vendor.user.profile?.profile_image_url ? (
+                                    <img
+                                        src={vendor.user.profile.profile_image_url}
+                                        alt={vendor.user.first_name || "Vendor"}
+                                        className="h-12 w-12 flex-shrink-0 rounded-full border-2 border-green-500 object-cover sm:h-16 sm:w-16"
+                                    />
+                                ) : (
+                                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border-2 border-green-500 bg-gradient-to-br from-blue-400 to-blue-600 text-sm font-semibold text-white sm:h-16 sm:w-16 sm:text-lg">
+                                        {(vendor.user.first_name?.[0] || "") + (vendor.user.last_name?.[0] || "")}
+                                    </div>
+                                )}
+
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="break-words font-semibold text-gray-900 underline">
+                                        {vendor.user.first_name} {vendor.user.last_name}
+                                    </h3>
+                                    <p className="break-words text-sm text-gray-500">{vendor.role}</p>
+                                </div>
                             </div>
-                        )}
 
-                        {/* Info */}
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 underline">
-                                {vendor.user.first_name} {vendor.user.last_name}
-                            </h3>
-                            <p className="text-sm text-gray-500">{vendor.role}</p>
+                            {/* Date */}
+                            <div className="w-full sm:w-auto">
+                                <div className="flex sm:justify-end">
+                                    <DatePill date={vendor.created_at} />
+                                </div>
+                            </div>
                         </div>
-
-                        {/* Action Buttons - Only DatePill as requested */}
-                        <div className="flex items-center gap-4">
-                            <DatePill date={vendor.created_at} />
-                        </div>
-                    </div>
-                ))
+                    ))
                 )}
             </div>
 
-            {/* Load More Button */}
+            {/* Load More */}
             {vendors?.next_page_url && (
-                <div className="mt-6 flex justify-center pb-6">
+                <div className="mt-2 flex justify-center px-4 pb-6 sm:px-6">
                     <Button
                         variant="outline"
-                        className="bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
+                        className="w-full border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100 sm:w-auto"
                         onClick={() => fetchVendors(vendors.current_page + 1)}
                         disabled={isLoading}
                     >
@@ -119,7 +123,7 @@ export function Vendors() {
                         ) : (
                             <>
                                 Loading more...
-                                <ChevronDown className="h-4 w-4 ml-2 text-green-500" />
+                                <ChevronDown className="ml-2 h-4 w-4 text-green-500" />
                             </>
                         )}
                     </Button>

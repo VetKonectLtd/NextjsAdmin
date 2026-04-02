@@ -2,338 +2,303 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	ChevronDown,
-	Loader2,
-	AlertCircle,
-	Building2,
-	Eye,
+    ChevronDown,
+    Loader2,
+    AlertCircle,
+    Building2,
+    Eye,
     Check,
 } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
 import { DatePill } from "@/components/ui/date-pill";
 import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogDescription,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
 export function VeterinaryClinic() {
-	const [searchQuery, setSearchQuery] = useState("");
-	const { clinics, fetchClinics, isLoading, error } = useUserStore();
+    const [searchQuery, setSearchQuery] = useState("");
+    const { clinics, fetchClinics, isLoading, error } = useUserStore();
 
-	const [rejectModalOpen, setRejectModalOpen] = useState(false);
-	const [rejectReason, setRejectReason] = useState("");
-	const [selectedVetId, setSelectedVetId] = useState<number | null>(null);
+    const [rejectModalOpen, setRejectModalOpen] = useState(false);
+    const [rejectReason, setRejectReason] = useState("");
+    const [selectedVetId, setSelectedVetId] = useState<number | null>(null);
 
-	const [detailsOpen, setDetailsOpen] = useState(false);
-	const [selectedClinic, setSelectedClinic] = useState<any | null>(null);
+    const [detailsOpen, setDetailsOpen] = useState(false);
+    const [selectedClinic, setSelectedClinic] = useState<any | null>(null);
 
-	const rejectUser = useUserStore((s) => s.rejectUser);
+    const rejectUser = useUserStore((s) => s.rejectUser);
 
-	useEffect(() => {
-		fetchClinics();
-	}, [fetchClinics]);
+    useEffect(() => {
+        fetchClinics();
+    }, [fetchClinics]);
 
-	if (isLoading && !clinics) {
-		return (
-			<div className="flex items-center justify-center min-h-[400px]">
-				<Loader2 className="h-8 w-8 animate-spin text-green-500" />
-			</div>
-		);
-	}
+    if (isLoading && !clinics) {
+        return (
+            <div className="flex min-h-[400px] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+            </div>
+        );
+    }
 
-	if (error && !clinics) {
-		return (
-			<div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
-				<AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-				<h3 className="text-lg font-semibold text-gray-900 mb-2">
-					Failed to load veterinary clinics
-				</h3>
-				<p className="text-sm text-gray-500 mb-4">{error}</p>
-				<Button
-					onClick={() => fetchClinics()}
-					className="bg-green-500 hover:bg-green-600 text-white"
-				>
-					Try Again
-				</Button>
-			</div>
-		);
-	}
+    if (error && !clinics) {
+        return (
+            <div className="flex min-h-[400px] flex-col items-center justify-center px-6 text-center">
+                <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Failed to load veterinary clinics
+                </h3>
+                <p className="mb-4 break-words text-sm text-gray-500">{error}</p>
+                <Button
+                    onClick={() => fetchClinics()}
+                    className="bg-green-500 text-white hover:bg-green-600"
+                >
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
 
-	const openRejectModal = (vetId: number) => {
-		setSelectedVetId(vetId);
-		setRejectReason("");
-		setRejectModalOpen(true);
-	};
+    const openRejectModal = (vetId: number) => {
+        setSelectedVetId(vetId);
+        setRejectReason("");
+        setRejectModalOpen(true);
+    };
 
-	const openDetailsModal = (clinic: any) => {
-		setSelectedClinic(clinic);
-		setDetailsOpen(true);
-	};
+    const openDetailsModal = (clinic: any) => {
+        setSelectedClinic(clinic);
+        setDetailsOpen(true);
+    };
 
-	const handleRejectConfirm = async () => {
-		if (!selectedVetId || !rejectReason.trim()) return;
+    const handleRejectConfirm = async () => {
+        if (!selectedVetId || !rejectReason.trim()) return;
 
-		await rejectUser(selectedVetId, "veterinary-clinic", rejectReason);
+        await rejectUser(selectedVetId, "veterinary-clinic", rejectReason);
+        setRejectModalOpen(false);
+        setSelectedVetId(null);
+        setRejectReason("");
+    };
 
-		setRejectModalOpen(false);
-		setSelectedVetId(null);
-		setRejectReason("");
-	};
+    const filteredClinics =
+        clinics?.data?.filter((clinic) => {
+            const searchLower = searchQuery.toLowerCase();
+            return (
+                clinic.name_of_clinic.toLowerCase().includes(searchLower) ||
+                clinic.specialty.toLowerCase().includes(searchLower) ||
+                clinic.address.toLowerCase().includes(searchLower)
+            );
+        }) || [];
 
-	const filteredClinics =
-		clinics?.data?.filter((clinic) => {
-			const searchLower = searchQuery.toLowerCase();
-			return (
-				clinic.name_of_clinic.toLowerCase().includes(searchLower) ||
-				clinic.specialty.toLowerCase().includes(searchLower) ||
-				clinic.address.toLowerCase().includes(searchLower)
-			);
-		}) || [];
+    return (
+        <div className="min-h-screen bg-white">
+            <div className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
+                <Input
+                    type="text"
+                    placeholder="Search clinic, specialty, address..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full text-sm sm:text-base"
+                />
+            </div>
 
-	return (
-		<div className="min-h-screen bg-white">
-			{/* Search and Filter Section */}
-			<div className="px-6 py-6 flex items-center gap-4">
-				<Input
-					type="text"
-					placeholder="Search"
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					className="flex-1"
-				/>
-			</div>
+            <div className="mx-auto w-full max-w-6xl space-y-3 px-3 pb-4 sm:space-y-4 sm:px-6 sm:pb-6">
+                {filteredClinics.map((clinic) => (
+                    <div
+                        key={clinic.id}
+                        className="overflow-hidden rounded-lg border border-gray-200 bg-white p-3 sm:p-4"
+                    >
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                            <div className="flex min-w-0 flex-1 items-start gap-3">
+                                {clinic.user.profile?.profile_image_url ? (
+                                    <img
+                                        src={clinic.user.profile.profile_image_url}
+                                        alt={clinic.name_of_clinic || "Clinic"}
+                                        className="h-12 w-12 flex-shrink-0 rounded-full border-2 border-green-500 object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border-2 border-green-500 bg-gradient-to-br from-blue-400 to-blue-600 text-sm font-semibold text-white">
+                                        {clinic.name_of_clinic?.[0] || "C"}
+                                    </div>
+                                )}
 
-			{/* Clinic List */}
-			<div className="px-6 space-y-4">
-				{filteredClinics.length === 0 ? (
-					<div className="flex flex-col items-center justify-center py-16 text-center">
-						<Building2 className="h-12 w-12 text-gray-300 mb-4" />
-						<h3 className="text-lg font-semibold text-gray-900 mb-2">
-							No veterinary clinics found
-						</h3>
-						<p className="text-sm text-gray-500">
-							{searchQuery
-								? "Try adjusting your search query"
-								: "Clinics will appear here once they register"}
-						</p>
-					</div>
-				) : (
-					filteredClinics.map((clinic) => (
-						<div
-							key={clinic.id}
-							className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
-						>
-							{/* Avatar */}
-							{clinic.user.profile?.profile_image_url ? (
-								<img
-									src={clinic.user.profile.profile_image_url}
-									alt={clinic.name_of_clinic || "Clinic"}
-									className="w-12 h-12 rounded-full object-cover border-2 border-green-500"
-								/>
-							) : (
-								<div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-									{clinic.name_of_clinic?.[0] || "C"}
-								</div>
-							)}
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="break-words font-semibold text-gray-900">
+                                        {clinic.name_of_clinic}
+                                    </h3>
+                                    <p className="break-words text-sm text-gray-500">
+                                        {clinic.specialty}
+                                    </p>
+                                    <p className="break-all text-xs text-gray-400">
+                                        {clinic.contact_num}
+                                    </p>
+                                    <p className="break-words text-xs text-gray-400">
+                                        {clinic.address}
+                                    </p>
+                                    <p className="break-all text-xs text-gray-400">
+                                        {clinic.user.email}
+                                    </p>
+                                </div>
+                            </div>
 
-							{/* Info */}
-							<div className="flex-1">
-								<h3 className="font-semibold text-gray-900">
-									{clinic.name_of_clinic}
-								</h3>
-								<p className="text-sm text-gray-500">{clinic.specialty}</p>
-								<p className="text-xs text-gray-400">{clinic.contact_num}</p>
-								<p className="text-xs text-gray-400">{clinic.address}</p>
-								<p className="text-xs text-gray-400">{clinic.user.email}</p>
-							</div>
+                            <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[250px] sm:items-end">
+                                <div className="flex w-full flex-wrap items-center gap-2 sm:justify-end">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => openDetailsModal(clinic)}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        <Eye className="mr-1 h-4 w-4" />
+                                        Details
+                                    </Button>
 
-							{/* Action Button */}
-							<Button
-								variant="outline"
-								onClick={() => openDetailsModal(clinic)}
-							>
-								<Eye className="h-6 w-6" />
-							</Button>
+                                    {clinic.is_approved === "0" ? (
+                                        <Button
+                                            className="w-full bg-green-500 text-white hover:bg-green-600 sm:w-auto"
+                                            onClick={() =>
+                                                useUserStore
+                                                    .getState()
+                                                    .verifyUser(clinic.id, "veterinary-clinic")
+                                            }
+                                        >
+                                            Verify
+                                        </Button>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full cursor-default border-green-600 text-green-600 hover:bg-transparent sm:w-auto"
+                                            >
+                                                Verified
+                                                <Check className="ml-1 size-5" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full border-red-600 text-red-600 hover:bg-red-50 sm:w-auto"
+                                                onClick={() => openRejectModal(clinic.id)}
+                                            >
+                                                Reject
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
 
-							<Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-								<DialogContent className="max-w-lg">
-									<DialogHeader>
-										<DialogTitle>Clinic Details</DialogTitle>
-										<DialogDescription>
-											Full veterinary clinic information
-										</DialogDescription>
-									</DialogHeader>
+                                <div className="w-full sm:w-auto">
+                                    <DatePill date={clinic.created_at} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
 
-									{selectedClinic && (
-										<div className="space-y-4">
-											<div className="flex items-center gap-4">
-												{selectedClinic.user.profile?.profile_image_url ? (
-													<img
-														src={selectedClinic.user.profile.profile_image_url}
-														className="w-20 h-20 rounded-full object-cover"
-													/>
-												) : (
-													<div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold">
-														{selectedClinic.name_of_clinic?.[0]}
-													</div>
-												)}
-											</div>
+            {clinics?.next_page_url && (
+                <div className="mt-2 flex justify-center px-4 pb-6 sm:px-6">
+                    <Button
+                        variant="outline"
+                        className="w-full border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100 sm:w-auto"
+                        onClick={() => fetchClinics(clinics.current_page + 1)}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Loading...
+                            </>
+                        ) : (
+                            <>
+                                Loading more...
+                                <ChevronDown className="ml-2 h-4 w-4 text-green-500" />
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
 
-											<div className="text-sm space-y-2">
-												<p>
-													<strong>Clinic Name:</strong>{" "}
-													{selectedClinic.name_of_clinic}
-												</p>
-												<p>
-													<strong>Email:</strong> {selectedClinic.user.email}
-												</p>
-												<p>
-													<strong>Specialty:</strong> {selectedClinic.specialty}
-												</p>
-												<p>
-													<strong>Contact:</strong> {selectedClinic.contact_num}
-												</p>
-												<p>
-													<strong>Address:</strong> {selectedClinic.address}
-												</p>
-												<p>
-													<strong>Status:</strong>{" "}
-													{selectedClinic.is_approved === "1"
-														? "Verified"
-														: "Pending"}
-												</p>
-												<p>
-													<strong>Joined:</strong> {selectedClinic.created_at}
-												</p>
-											</div>
+            <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+                <DialogContent className="w-[95vw] max-w-lg max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+                    <DialogHeader>
+                        <DialogTitle>Clinic Details</DialogTitle>
+                        <DialogDescription>
+                            Full veterinary clinic information
+                        </DialogDescription>
+                    </DialogHeader>
 
-											<div className="flex justify-end gap-3">
-												<Button
-													variant="outline"
-													onClick={() => setDetailsOpen(false)}
-												>
-													Close
-												</Button>
-											</div>
-										</div>
-									)}
-								</DialogContent>
-							</Dialog>
+                    {selectedClinic && (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4">
+                                {selectedClinic.user.profile?.profile_image_url ? (
+                                    <img
+                                        src={selectedClinic.user.profile.profile_image_url}
+                                        className="h-16 w-16 rounded-full object-cover sm:h-20 sm:w-20"
+                                    />
+                                ) : (
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-lg font-bold sm:h-20 sm:w-20 sm:text-xl">
+                                        {selectedClinic.name_of_clinic?.[0]}
+                                    </div>
+                                )}
+                            </div>
 
-							<div className="flex items-center gap-3">
-								{clinic.is_approved === "0" ? (
-									<>
-										<Button
-											className="bg-green-500 hover:bg-green-600 text-white"
-											onClick={() =>
-												useUserStore
-													.getState()
-													.verifyUser(clinic.id, "veterinary-clinic")
-											}
-										>
-											Verify
-										</Button>
+                            <div className="space-y-2 text-sm break-words">
+                                <p><strong>Clinic Name:</strong> {selectedClinic.name_of_clinic}</p>
+                                <p><strong>Email:</strong> <span className="break-all">{selectedClinic.user.email}</span></p>
+                                <p><strong>Specialty:</strong> {selectedClinic.specialty}</p>
+                                <p><strong>Contact:</strong> {selectedClinic.contact_num}</p>
+                                <p><strong>Address:</strong> {selectedClinic.address}</p>
+                                <p>
+                                    <strong>Status:</strong>{" "}
+                                    {selectedClinic.is_approved === "1" ? "Verified" : "Pending"}
+                                </p>
+                                <p><strong>Joined:</strong> {selectedClinic.created_at}</p>
+                            </div>
 
-										{/* <Button
-											variant="outline"
-											className="text-red-600 border-red-600 hover:bg-red-50"
-											onClick={() => openRejectModal(clinic.id)}
-										>
-											Reject
-										</Button> */}
-									</>
-								) : (
-									<>
-										<Button
-											variant="outline"
-											className="text-green-600 border-green-600 cursor-default hover:bg-transparent"
-										>
-											Verified
-                                            <Check className="ml-1 font-extrabold size-6" />
-										</Button>
-										<Button
-											variant="outline"
-											className="text-red-600 border-red-600 hover:bg-red-50"
-											onClick={() => openRejectModal(clinic.id)}
-										>
-											Reject
-										</Button>
-									</>
-								)}
+                            <div className="flex justify-end">
+                                <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+                                    Close
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
 
-								<DatePill date={clinic.created_at} />
-							</div>
-							<Dialog open={rejectModalOpen} onOpenChange={setRejectModalOpen}>
-								<DialogContent className="max-w-md">
-									<DialogHeader>
-										<DialogTitle className="text-red-600">
-											Reject Veterinary Clinic
-										</DialogTitle>
-										<DialogDescription>
-											Please provide a reason for rejecting this veterinary
-											clinic.
-										</DialogDescription>
-									</DialogHeader>
+            <Dialog open={rejectModalOpen} onOpenChange={setRejectModalOpen}>
+                <DialogContent className="w-[95vw] max-w-md p-4 sm:p-6">
+                    <DialogHeader>
+                        <DialogTitle className="text-red-600">
+                            Reject Veterinary Clinic
+                        </DialogTitle>
+                        <DialogDescription>
+                            Please provide a reason for rejecting this veterinary clinic.
+                        </DialogDescription>
+                    </DialogHeader>
 
-									<div className="space-y-4">
-										<Textarea
-											placeholder="Type rejection reason..."
-											value={rejectReason}
-											onChange={(e: any) => setRejectReason(e.target.value)}
-											rows={4}
-										/>
+                    <div className="space-y-4">
+                        <Textarea
+                            placeholder="Type rejection reason..."
+                            value={rejectReason}
+                            onChange={(e: any) => setRejectReason(e.target.value)}
+                            rows={4}
+                        />
 
-										<div className="flex justify-end gap-3">
-											<Button
-												variant="outline"
-												onClick={() => setRejectModalOpen(false)}
-											>
-												Cancel
-											</Button>
-
-											<Button
-												className="bg-red-600 hover:bg-red-700 text-white"
-												disabled={!rejectReason.trim()}
-												onClick={handleRejectConfirm}
-											>
-												Reject
-											</Button>
-										</div>
-									</div>
-								</DialogContent>
-							</Dialog>
-						</div>
-					))
-				)}
-			</div>
-
-			{/* Load More Button */}
-			{clinics?.next_page_url && (
-				<div className="mt-6 flex justify-center pb-6">
-					<Button
-						variant="outline"
-						className="bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
-						onClick={() => fetchClinics(clinics.current_page + 1)}
-						disabled={isLoading}
-					>
-						{isLoading ? (
-							<>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								Loading...
-							</>
-						) : (
-							<>
-								Loading more...
-								<ChevronDown className="h-4 w-4 ml-2 text-green-500" />
-							</>
-						)}
-					</Button>
-				</div>
-			)}
-		</div>
-	);
+                        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                            <Button variant="outline" onClick={() => setRejectModalOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                className="bg-red-600 text-white hover:bg-red-700"
+                                disabled={!rejectReason.trim()}
+                                onClick={handleRejectConfirm}
+                            >
+                                Reject
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
 }

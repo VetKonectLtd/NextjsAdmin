@@ -29,7 +29,7 @@ export function Dashboard() {
     const navigate = useNavigate();
     const [activeMainTab, setActiveMainTab] = useState("users-features");
     const [activeCategory, setActiveCategory] = useState("pet-owners");
-    
+
     const { data: analyticsData, fetchAnalytics, isLoading } = useAnalyticsStore();
 
     useEffect(() => {
@@ -37,20 +37,15 @@ export function Dashboard() {
     }, [fetchAnalytics]);
 
     useEffect(() => {
-        // Handle navigation based on path
         if (location.pathname === "/content") {
             navigate("/content");
             return;
         }
 
-        // Set active tab based on path
         const tab = mainNavigationTabs.find((t) => location.pathname === t.path);
-        if (tab) {
-            setActiveMainTab(tab.id);
-        }
+        if (tab) setActiveMainTab(tab.id);
     }, [location.pathname, navigate]);
 
-    // Build statistics from analytics data
     const statistics = [
         {
             id: "total-users",
@@ -69,7 +64,10 @@ export function Dashboard() {
         {
             id: "total-veterinarian",
             label: "Total Veterinarian",
-            value: (analyticsData?.veterinaryDoctor ?? 0) + (analyticsData?.veterinaryClinic ?? 0) + (analyticsData?.veterinaryParaprofessional ?? 0),
+            value:
+                (analyticsData?.veterinaryDoctor ?? 0) +
+                (analyticsData?.veterinaryClinic ?? 0) +
+                (analyticsData?.veterinaryParaprofessional ?? 0),
             icon: TotalVeterinariansIcon,
             highlighted: false,
         },
@@ -124,13 +122,12 @@ export function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* Africa Region Section with Users & Features Statistics */}
+        <div className="min-h-screen bg-white overflow-x-hidden">
             <AfricaRegionWithStats statistics={statistics} isLoading={isLoading} />
 
             {/* Main Navigation Tabs */}
-            <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
-                <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
+            <nav className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 px-3 py-2 sm:px-6 sm:py-3">
+                <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch]">
                     {mainNavigationTabs.map((tab) => (
                         <button
                             key={tab.id}
@@ -139,9 +136,9 @@ export function Dashboard() {
                                 navigate(tab.path);
                             }}
                             className={cn(
-                                "px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0",
+                                "shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-xs sm:text-sm md:text-base font-medium transition-colors",
                                 activeMainTab === tab.id
-                                    ? "text-gray-900 font-bold text-base border-b-2 border-green-500"
+                                    ? "text-gray-900 font-bold border-b-2 border-green-500"
                                     : "text-gray-600 hover:text-gray-900"
                             )}
                         >
@@ -151,18 +148,18 @@ export function Dashboard() {
                 </div>
             </nav>
 
-            {/* Sub Navigation - Only show for Users & Features */}
+            {/* Sub Navigation */}
             {activeMainTab === "users-features" && (
-                <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-30">
-                    <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
+                <nav className="sticky top-[52px] sm:top-[60px] z-20 border-b border-gray-200 bg-white px-3 py-2 sm:px-6 sm:py-3">
+                    <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch]">
                         {userCategories.map((category) => (
                             <button
                                 key={category.id}
                                 onClick={() => setActiveCategory(category.id)}
                                 className={cn(
-                                    "px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0",
+                                    "shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-xs sm:text-sm md:text-base font-medium transition-colors",
                                     activeCategory === category.id
-                                        ? "text-gray-900 font-bold text-base border-b-2 border-green-500"
+                                        ? "text-gray-900 font-bold border-b-2 border-green-500"
                                         : "text-gray-600 hover:text-gray-900"
                                 )}
                             >
@@ -173,8 +170,11 @@ export function Dashboard() {
                 </nav>
             )}
 
-            {/* Main Content - Only show Users & Features content */}
-            {activeMainTab === "users-features" && renderContent()}
+            {activeMainTab === "users-features" && (
+                <main className="w-full">
+                    {renderContent()}
+                </main>
+            )}
         </div>
     );
 }
