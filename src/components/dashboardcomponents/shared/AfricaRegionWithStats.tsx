@@ -153,73 +153,69 @@ export function AfricaRegionWithStats({
 		selectedCountry && isLoadingCountry ? loaderCards : displayStatistics;
 
 	return (
-		<div className="bg-white px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
-			{/* Title */}
-			<div className="flex items-center gap-2 mb-3 sm:mb-4">
-				<h2 className="text-xl sm:text-2xl font-bold text-gray-900">Africa</h2>
+		<div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6 sm:py-6">
+			<div className="mb-3 flex flex-wrap items-center gap-2 sm:mb-4">
+				<h2 className="text-xl font-bold text-gray-900 sm:text-2xl">Africa</h2>
 				{selectedCountry && (
-					<span className="px-2 py-1 bg-green-100 text-green-800 text-xs sm:text-sm font-medium rounded-full">
+					<span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 sm:text-sm">
 						{selectedCountry}
 					</span>
 				)}
 			</div>
 
-			{/* Country Flags and Search */}
-			<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-				{/* Country Flags - scrollable on mobile */}
-				<div className="flex items-center gap-2  py-4 sm:pb-0 sm:flex-wrap  max-w-full sm:max-w-[70%]">
-					{filteredCountries.map((country) => (
-						<button
-							key={country.name}
-							onClick={() => handleCountrySelect(country.name)}
-							className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 flex items-center justify-center text-xl sm:text-2xl transition-all flex-shrink-0
+			<div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:gap-4">
+				{/* Flags: horizontal scroll on mobile, wrap on larger screens */}
+				<div className="max-w-full overflow-x-auto sm:overflow-visible">
+					<div className="flex min-w-max items-center gap-2 pb-2 sm:min-w-0 sm:flex-wrap sm:pb-0">
+						{filteredCountries.map((country) => (
+							<button
+								key={country.name}
+								onClick={() => handleCountrySelect(country.name)}
+								className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 text-xl transition-all sm:h-10 sm:w-10 sm:text-2xl
                                 ${
 																	selectedCountry === country.name
-																		? "border-green-500 scale-110 shadow-md grayscale-0"
-																		: "border-gray-200 hover:border-green-300 grayscale hover:grayscale-0"
+																		? "scale-110 border-green-500 shadow-md grayscale-0"
+																		: "border-gray-200 grayscale hover:border-green-300 hover:grayscale-0"
 																}`}
-							title={country.name}
-						>
-							<ReactCountryFlag
-								svg
-								countryCode={country.code}
-								style={{
-									width: "1.25em",
-									height: "1.25em",
-								}}
 								title={country.name}
-							/>
-						</button>
-					))}
-					{filteredCountries.length === 0 && (
-						<span className="text-sm text-gray-500 italic">
-							No countries found
-						</span>
-					)}
+							>
+								<ReactCountryFlag
+									svg
+									countryCode={country.code}
+									style={{ width: "1.25em", height: "1.25em" }}
+									title={country.name}
+								/>
+							</button>
+						))}
+						{filteredCountries.length === 0 && (
+							<span className="text-sm italic text-gray-500">
+								No countries found
+							</span>
+						)}
+					</div>
 				</div>
 
-				{/* Country Search Bar */}
-				<div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 sm:px-4 py-2 border border-gray-200 min-w-0">
-					<MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
+				<div className="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 sm:px-4">
+					<MapPin className="h-4 w-4 flex-shrink-0 text-red-500 sm:h-5 sm:w-5" />
 					<Input
 						type="text"
 						placeholder="Type in the country of choice"
 						value={countrySearch}
 						onChange={(e) => setCountrySearch(e.target.value)}
-						className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm sm:text-base min-w-0"
+						className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 sm:text-base"
 					/>
 					<Button
 						variant="ghost"
 						size="icon"
-						className="h-7 w-7 sm:h-8 sm:w-8 bg-gray-800 hover:bg-gray-700 text-white rounded-lg flex-shrink-0"
+						className="h-8 w-8 flex-shrink-0 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
 					>
-						<Search className="h-3 w-3 sm:h-4 sm:w-4" />
+						<Search className="h-4 w-4" />
 					</Button>
 				</div>
 			</div>
 
-			{/* Statistics Cards - responsive grid */}
-			<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+			{/* 1-col very small, 2-col mobile, 3-col tablet, 6-col desktop */}
+			<div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 sm:gap-4">
 				{statsToShow.map((stat) => {
 					const Icon = stat.icon;
 					return (

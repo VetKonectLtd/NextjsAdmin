@@ -5,7 +5,13 @@ import { ManageButton } from "@/components/shared/ManageButton";
 import { useSubscriptionStore } from "@/stores/use-subscription-store";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Trash2, Check, SquareArrowOutUpRight, SquareArrowOutDownLeftIcon, SquarePen } from "lucide-react";
+import {
+  Trash2,
+  Check,
+  SquareArrowOutUpRight,
+  SquareArrowOutDownLeftIcon,
+  SquarePen,
+} from "lucide-react";
 
 const ManageSubscription = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -26,92 +32,105 @@ const ManageSubscription = () => {
   }, [fetchPlans]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-lg font-bold mb-4">Subscription</h1>
+    <div className="min-h-screen bg-gray-50 px-4 py-4 sm:px-6 sm:py-6">
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-base font-bold sm:text-lg">Subscription</h1>
 
-      <ManageButton
-        label="Add New Sub Plan"
-        onClick={() => setIsCreateModalOpen(true)}
-      />
+          <div className="w-full sm:w-auto">
+            <ManageButton
+              label="Add New Sub Plan"
+              onClick={() => setIsCreateModalOpen(true)}
+            />
+          </div>
+        </div>
 
-      <CreateSubscriptionModal
-        isOpen={isCreateModalOpen}
-        onClose={() => {
-          setIsCreateModalOpen(false);
-          setEditingPlan(null);
-        }}
-        editingPlan={editingPlan}
-      />
+        <CreateSubscriptionModal
+          isOpen={isCreateModalOpen}
+          onClose={() => {
+            setIsCreateModalOpen(false);
+            setEditingPlan(null);
+          }}
+          editingPlan={editingPlan}
+        />
 
-      {/* Plans */}
-      <div className="space-y-4 mt-6">
-        {plans.map((plan) => {
-          const isExpanded = expandedId === plan.id;
+        <div className="mt-6 space-y-4">
+          {plans.map((plan) => {
+            const isExpanded = expandedId === plan.id;
 
-          return (
-            <div
-              key={plan.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-200"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-start p-5">
-                <div className="flex gap-5">
-                  <div>
-
-                    <h2 className="text-sm font-semibold">
+            return (
+              <div
+                key={plan.id}
+                className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+              >
+                <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="break-words text-sm font-semibold sm:text-base">
                       {plan.subscription_title}
                     </h2>
-                    <p className="text-lg flex items-center font-bold mt-1">
-                      ₦ {plan.price.toLocaleString()} <span className="text-gray-500">/</span> <p className="text-sm font-semibold text-gray-500">{plan?.date_option == "Months" ? "Monthly" : plan?.date_option}</p>
-                    </p> </div>
 
+                    <p className="mt-1 flex flex-wrap items-center gap-1 text-base font-bold sm:text-lg">
+                      <span>₦ {Number(plan.price).toLocaleString()}</span>
+                      <span className="text-gray-500">/</span>
+                      <span className="text-sm font-semibold text-gray-500">
+                        {plan?.date_option === "Months" ? "Monthly" : plan?.date_option}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between lg:w-auto lg:justify-end">
+                    <span className="w-fit rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500">
+                      {formatDistanceToNow(new Date(plan.created_at), { addSuffix: true })}
+                    </span>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingPlan(plan);
+                          setIsCreateModalOpen(true);
+                        }}
+                        className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                        title="Edit plan"
+                      >
+                        <SquarePen size={20} />
+                      </button>
+
+                      <button
+                        onClick={() => handleDeletePlan(plan.id)}
+                        className="rounded-md p-2 text-red-500 hover:bg-gray-100"
+                        title="Delete plan"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+
+                      <button
+                        onClick={() => setExpandedId(isExpanded ? null : plan.id)}
+                        className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                        title={isExpanded ? "Collapse details" : "Expand details"}
+                      >
+                        {isExpanded ? (
+                          <SquareArrowOutDownLeftIcon size={20} />
+                        ) : (
+                          <SquareArrowOutUpRight size={20} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-3">
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-500">
-                    {formatDistanceToNow(new Date(plan.created_at), { addSuffix: true })}
-                  </span>
-
-                  <button
-                    onClick={() => {
-                      setEditingPlan(plan);
-                      setIsCreateModalOpen(true);
-                    }}
-                    className="p-2 rounded-md text-gray-600 hover:bg-gray-100"
-                  >
-                    <SquarePen size={20} />
-                  </button>
-
-                  <button onClick={() => handleDeletePlan(plan.id)} className="p-2 rounded-md hover:bg-gray-100 text-red-500">
-                    <Trash2 size={20} />
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      setExpandedId(isExpanded ? null : plan.id)
-                    }
-                    className="p-2 text-gray-600 rounded-md hover:bg-gray-100"
-                  >
-                    {isExpanded ? <SquareArrowOutDownLeftIcon size={20} /> : <SquareArrowOutUpRight size={20} />}
-                  </button>
-                </div>
+                {isExpanded && (
+                  <div className="px-4 pb-4 sm:px-5 sm:pb-5">
+                    <div className="space-y-3 text-sm text-gray-600">
+                      {(plan.features || []).map((feature: string, index: number) => (
+                        <Feature key={index} label={feature} />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Expanded Content */}
-              {isExpanded && (
-
-                <div className="px-5 pb-5 space-y-3 text-sm text-gray-600">
-                  {
-                    plan.features.map((feature, index) => (
-                      <Feature key={index} label={feature} />
-                    ))
-                  }
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -119,15 +138,11 @@ const ManageSubscription = () => {
 
 export default ManageSubscription;
 
-const Feature = ({
-  label,
-}: {
-  label: string;
-}) => {
+const Feature = ({ label }: { label: string }) => {
   return (
-    <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-      <span className="font-medium text-gray-700">{label}</span>
-      <span className="flex items-center gap-2 bg-gray-100 rounded-md p-2 text-gray-500">
+    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+      <span className="min-w-0 flex-1 break-words font-medium text-gray-700">{label}</span>
+      <span className="flex shrink-0 items-center gap-2 rounded-md bg-gray-100 p-2 text-gray-500">
         <Check size={16} className="text-green-700" />
       </span>
     </div>
