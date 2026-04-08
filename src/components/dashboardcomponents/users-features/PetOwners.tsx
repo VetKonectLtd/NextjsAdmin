@@ -8,10 +8,29 @@ import { DatePill } from "@/components/ui/date-pill";
 export function PetOwners() {
     const [searchQuery, setSearchQuery] = useState("");
     const { petOwners, fetchPetOwners, isLoading, error } = useUserStore();
+    const [stackedOwners, setStackedOwners] = useState<any[]>([]);
 
     useEffect(() => {
         fetchPetOwners();
     }, [fetchPetOwners]);
+
+    useEffect(() => {
+        if (!petOwners?.data) return;
+
+        setStackedOwners((prev) => {
+            // first page replaces list
+            if ((petOwners.current_page ?? 1) <= 1) {
+                return petOwners.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((o) => [o.id, o]));
+            for (const owner of petOwners.data) {
+                byId.set(owner.id, owner);
+            }
+            return Array.from(byId.values());
+        });
+    }, [petOwners]);
 
     if (isLoading && !petOwners) {
         return (
@@ -34,14 +53,15 @@ export function PetOwners() {
         );
     }
 
-    const filteredOwners = petOwners?.data?.filter((owner) => {
-        const searchLower = searchQuery.toLowerCase();
-        return (
-            owner.user.first_name?.toLowerCase().includes(searchLower) ||
-            owner.user.last_name?.toLowerCase().includes(searchLower) ||
-            owner.user.email.toLowerCase().includes(searchLower)
-        );
-    }) || [];
+    const filteredOwners =
+        stackedOwners.filter((owner) => {
+            const searchLower = searchQuery.toLowerCase();
+            return (
+                owner.user.first_name?.toLowerCase().includes(searchLower) ||
+                owner.user.last_name?.toLowerCase().includes(searchLower) ||
+                owner.user.email?.toLowerCase().includes(searchLower)
+            );
+        }) || [];
 
     return (
         <div className="min-h-screen bg-white">

@@ -8,10 +8,29 @@ import { DatePill } from "@/components/ui/date-pill";
 export function LivestockFarmers() {
     const [searchQuery, setSearchQuery] = useState("");
     const { livestockFarmers, fetchLivestockFarmers, isLoading, error } = useUserStore();
+    const [stackedFarmers, setStackedFarmers] = useState<any[]>([]);
 
     useEffect(() => {
         fetchLivestockFarmers();
     }, [fetchLivestockFarmers]);
+
+    useEffect(() => {
+        if (!livestockFarmers?.data) return;
+
+        setStackedFarmers((prev) => {
+            // first page replaces list
+            if ((livestockFarmers.current_page ?? 1) <= 1) {
+                return livestockFarmers.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((f) => [f.id, f]));
+            for (const farmer of livestockFarmers.data) {
+                byId.set(farmer.id, farmer);
+            }
+            return Array.from(byId.values());
+        });
+    }, [livestockFarmers]);
 
     if (isLoading && !livestockFarmers) {
         return (
@@ -35,7 +54,7 @@ export function LivestockFarmers() {
     }
 
     const filteredFarmers =
-        livestockFarmers?.data?.filter((farmer) => {
+        stackedFarmers.filter((farmer) => {
             const searchLower = searchQuery.toLowerCase();
             return (
                 farmer.user.first_name?.toLowerCase().includes(searchLower) ||

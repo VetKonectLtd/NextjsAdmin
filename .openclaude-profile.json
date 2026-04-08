@@ -1,0 +1,8 @@
+{
+  "profile": "gemini",
+  "env": {
+    "GEMINI_MODEL": "gemini-2.0-flash",
+    "GEMINI_API_KEY": "AIzaSyCDI9_4A-2wqoXdel3n8oPRKTTO6sZw_q8"
+  },
+  "createdAt": "2026-04-03T11:45:43.703Z"
+}

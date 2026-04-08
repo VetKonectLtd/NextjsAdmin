@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 export function Clinic() {
     const [searchQuery, setSearchQuery] = useState("");
     const { listedClinics, fetchListedClinics, isLoading, error } = useUserStore();
+    const [stackedClinics, setStackedClinics] = useState<any[]>([]);
 
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
@@ -36,6 +37,24 @@ export function Clinic() {
     useEffect(() => {
         fetchListedClinics();
     }, [fetchListedClinics]);
+
+    useEffect(() => {
+        if (!listedClinics?.data) return;
+
+        setStackedClinics((prev) => {
+            // first page replaces list
+            if ((listedClinics.current_page ?? 1) <= 1) {
+                return listedClinics.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((c) => [c.id, c]));
+            for (const clinic of listedClinics.data) {
+                byId.set(clinic.id, clinic);
+            }
+            return Array.from(byId.values());
+        });
+    }, [listedClinics]);
 
     if (isLoading && !listedClinics) {
         return (
@@ -85,7 +104,7 @@ export function Clinic() {
     };
 
     const filteredClinics =
-        listedClinics?.data?.filter((clinic:any) => {
+        stackedClinics.filter((clinic: any) => {
             const searchLower = searchQuery.toLowerCase();
             return (
                 clinic.clinic_name?.toLowerCase().includes(searchLower) ||

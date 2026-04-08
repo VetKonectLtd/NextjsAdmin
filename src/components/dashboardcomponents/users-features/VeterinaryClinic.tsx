@@ -5,7 +5,6 @@ import {
     ChevronDown,
     Loader2,
     AlertCircle,
-    Building2,
     Eye,
     Check,
 } from "lucide-react";
@@ -23,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 export function VeterinaryClinic() {
     const [searchQuery, setSearchQuery] = useState("");
     const { clinics, fetchClinics, isLoading, error } = useUserStore();
+    const [stackedClinics, setStackedClinics] = useState<any[]>([]);
 
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
@@ -36,6 +36,24 @@ export function VeterinaryClinic() {
     useEffect(() => {
         fetchClinics();
     }, [fetchClinics]);
+
+    useEffect(() => {
+        if (!clinics?.data) return;
+
+        setStackedClinics((prev) => {
+            // first page replaces list
+            if ((clinics.current_page ?? 1) <= 1) {
+                return clinics.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((c) => [c.id, c]));
+            for (const clinic of clinics.data) {
+                byId.set(clinic.id, clinic);
+            }
+            return Array.from(byId.values());
+        });
+    }, [clinics]);
 
     if (isLoading && !clinics) {
         return (
@@ -84,7 +102,7 @@ export function VeterinaryClinic() {
     };
 
     const filteredClinics =
-        clinics?.data?.filter((clinic) => {
+        stackedClinics.filter((clinic) => {
             const searchLower = searchQuery.toLowerCase();
             return (
                 clinic.name_of_clinic.toLowerCase().includes(searchLower) ||

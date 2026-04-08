@@ -8,10 +8,29 @@ import { DatePill } from "@/components/ui/date-pill";
 export function Vendors() {
     const [searchQuery, setSearchQuery] = useState("");
     const { vendors, fetchVendors, isLoading, error } = useUserStore();
+    const [stackedVendors, setStackedVendors] = useState<any[]>([]);
 
     useEffect(() => {
         fetchVendors();
     }, [fetchVendors]);
+
+    useEffect(() => {
+        if (!vendors?.data) return;
+
+        setStackedVendors((prev) => {
+            // first page replaces list
+            if ((vendors.current_page ?? 1) <= 1) {
+                return vendors.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((v) => [v.id, v]));
+            for (const vendor of vendors.data) {
+                byId.set(vendor.id, vendor);
+            }
+            return Array.from(byId.values());
+        });
+    }, [vendors]);
 
     if (isLoading && !vendors) {
         return (
@@ -35,7 +54,7 @@ export function Vendors() {
     }
 
     const filteredVendors =
-        vendors?.data?.filter((vendor) => {
+        stackedVendors.filter((vendor) => {
             const searchLower = searchQuery.toLowerCase();
             return (
                 vendor.user.first_name?.toLowerCase().includes(searchLower) ||

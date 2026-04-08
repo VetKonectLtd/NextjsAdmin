@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 export function Veterinarians() {
     const [searchQuery, setSearchQuery] = useState("");
     const { veterinarians, fetchVeterinarians, isLoading, error } = useUserStore();
+    const [stackedVets, setStackedVets] = useState<any[]>([]);
 
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
@@ -29,6 +30,24 @@ export function Veterinarians() {
     useEffect(() => {
         fetchVeterinarians();
     }, [fetchVeterinarians]);
+
+    useEffect(() => {
+        if (!veterinarians?.data) return;
+
+        setStackedVets((prev) => {
+            // first page replaces list
+            if ((veterinarians.current_page ?? 1) <= 1) {
+                return veterinarians.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((v) => [v.id, v]));
+            for (const vet of veterinarians.data) {
+                byId.set(vet.id, vet);
+            }
+            return Array.from(byId.values());
+        });
+    }, [veterinarians]);
 
     if (isLoading && !veterinarians) {
         return (
@@ -77,7 +96,7 @@ export function Veterinarians() {
     };
 
     const filteredVets =
-        veterinarians?.data?.filter((vet) => {
+        stackedVets.filter((vet) => {
             const searchLower = searchQuery.toLowerCase();
             return (
                 vet.user.first_name?.toLowerCase().includes(searchLower) ||

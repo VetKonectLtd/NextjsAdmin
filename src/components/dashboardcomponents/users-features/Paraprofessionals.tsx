@@ -21,9 +21,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 export function Paraprofessionals() {
-	const [searchQuery, setSearchQuery] = useState("");
-	const { paraprofessionals, fetchParaprofessionals, isLoading, error } =
-		useUserStore();
+    const [searchQuery, setSearchQuery] = useState("");
+    const { paraprofessionals, fetchParaprofessionals, isLoading, error } =
+        useUserStore();
+    const [stackedParas, setStackedParas] = useState<any[]>([]);
 
 	const [rejectModalOpen, setRejectModalOpen] = useState(false);
 	const [rejectReason, setRejectReason] = useState("");
@@ -37,6 +38,24 @@ export function Paraprofessionals() {
 	useEffect(() => {
 		fetchParaprofessionals();
 	}, [fetchParaprofessionals]);
+
+	useEffect(() => {
+		if (!paraprofessionals?.data) return;
+
+		setStackedParas((prev) => {
+			// first page replaces list
+			if ((paraprofessionals.current_page ?? 1) <= 1) {
+				return paraprofessionals.data;
+			}
+
+			// next pages append + de-duplicate by id
+			const byId = new Map<number, any>(prev.map((p) => [p.id, p]));
+			for (const para of paraprofessionals.data) {
+				byId.set(para.id, para);
+			}
+			return Array.from(byId.values());
+		});
+	}, [paraprofessionals]);
 
 	if (isLoading && !paraprofessionals) {
 		return (
@@ -86,7 +105,7 @@ export function Paraprofessionals() {
 	};
 
 	const filteredParas =
-		paraprofessionals?.data?.filter((para) => {
+		stackedParas.filter((para) => {
 			const searchLower = searchQuery.toLowerCase();
 			return (
 				para.user.first_name?.toLowerCase().includes(searchLower) ||

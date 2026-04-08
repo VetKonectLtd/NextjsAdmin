@@ -8,10 +8,29 @@ import { DatePill } from "@/components/ui/date-pill";
 export function Products() {
     const [searchQuery, setSearchQuery] = useState("");
     const { products, fetchProducts, isLoading, error } = useUserStore();
+    const [stackedProducts, setStackedProducts] = useState<any[]>([]);
 
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
+
+    useEffect(() => {
+        if (!products?.data) return;
+
+        setStackedProducts((prev) => {
+            // first page replaces list
+            if ((products.current_page ?? 1) <= 1) {
+                return products.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((p) => [p.id, p]));
+            for (const product of products.data) {
+                byId.set(product.id, product);
+            }
+            return Array.from(byId.values());
+        });
+    }, [products]);
 
     if (isLoading && !products) {
         return (
@@ -34,7 +53,7 @@ export function Products() {
         );
     }
 
-    const filteredProducts = products?.data?.filter((product) => {
+    const filteredProducts = stackedProducts.filter((product) => {
         const searchLower = searchQuery.toLowerCase();
         return (
             product.product_name.toLowerCase().includes(searchLower) ||

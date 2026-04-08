@@ -8,10 +8,29 @@ import { DatePill } from "@/components/ui/date-pill";
 export function Others() {
     const [searchQuery, setSearchQuery] = useState("");
     const { others, fetchOthers, isLoading, error } = useUserStore();
+    const [stackedOthers, setStackedOthers] = useState<any[]>([]);
 
     useEffect(() => {
         fetchOthers();
     }, [fetchOthers]);
+
+    useEffect(() => {
+        if (!others?.data) return;
+
+        setStackedOthers((prev) => {
+            // first page replaces list
+            if ((others.current_page ?? 1) <= 1) {
+                return others.data;
+            }
+
+            // next pages append + de-duplicate by id
+            const byId = new Map<number, any>(prev.map((u) => [u.id, u]));
+            for (const user of others.data) {
+                byId.set(user.id, user);
+            }
+            return Array.from(byId.values());
+        });
+    }, [others]);
 
     if (isLoading && !others) {
         return (
@@ -34,14 +53,15 @@ export function Others() {
         );
     }
 
-    const filteredUsers = others?.data?.filter((user) => {
-        const searchLower = searchQuery.toLowerCase();
-        return (
-            user.user.first_name?.toLowerCase().includes(searchLower) ||
-            user.user.last_name?.toLowerCase().includes(searchLower) ||
-            user.user.email.toLowerCase().includes(searchLower)
-        );
-    }) || [];
+    const filteredUsers =
+        stackedOthers.filter((user) => {
+            const searchLower = searchQuery.toLowerCase();
+            return (
+                user.user.first_name?.toLowerCase().includes(searchLower) ||
+                user.user.last_name?.toLowerCase().includes(searchLower) ||
+                user.user.email?.toLowerCase().includes(searchLower)
+            );
+        }) || [];
 
     return (
         <div className="min-h-screen bg-white">
