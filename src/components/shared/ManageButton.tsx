@@ -8,17 +8,16 @@ interface ManageButtonProps {
 
 export function ManageButton({ label, onClick, classes }: ManageButtonProps) {
     return (
-        <div className={`py-4 ${classes}`}>
+        <div className={`py-3 sm:py-4 ${classes}`}>
             <button
                 onClick={onClick}
-                className="w-full bg-white border-2 border-green-500 rounded-lg px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="flex w-full items-center justify-between gap-3 rounded-lg border-2 border-green-500 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
             >
                 <span className="font-bold text-gray-900">{label}</span>
-                <div className="scale-[1.8] ml-2">
+                <div className="ml-2 shrink-0 scale-150 sm:scale-[1.8]">
                     <PlusIcon />
                 </div>
             </button>
         </div>
     );
 }
-

@@ -345,13 +345,13 @@ export function BlogComponent() {
                         )}
 
                         {/* Blog Title */}
-                        <h2 className="text-2xl font-bold text-gray-900">
+                        <h2 className="break-words text-xl font-bold text-gray-900 sm:text-2xl">
                             {viewingBlog.title}
                         </h2>
 
                         {/* Author and Timestamp */}
-                        <div className="flex items-center justify-between">
-                            <p className="text-gray-600">
+                        <div className="flex flex-col gap-1 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
+                            <p className="break-words text-gray-600">
                                 Author. {viewingBlog.author?.name || "Unknown"}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -382,7 +382,7 @@ export function BlogComponent() {
                         />
 
                         {/* Engagement Metrics */}
-                        <div className="flex items-center gap-6 pt-4 border-t border-gray-200">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-gray-200 pt-4 sm:gap-6">
                             <div className="flex items-center gap-2">
                                 <Eye className="h-5 w-5 text-gray-600" />
                                 <span className="text-sm text-gray-600">
@@ -401,7 +401,7 @@ export function BlogComponent() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-3 pt-4">
+                        <div className="flex flex-wrap items-center gap-2 pt-4 sm:gap-3">
                             <Button
                                 variant="outline"
                                 onClick={() => handleEdit(viewingBlog)}
@@ -448,13 +448,13 @@ export function BlogComponent() {
                                             className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
                                         >
                                             <div className="flex items-start justify-between mb-2">
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex min-w-0 items-center gap-3">
                                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
                                                         {authorName.charAt(0)}
                                                     </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <p className="font-semibold text-gray-900">{authorName}</p>
+                                                    <div className="min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <p className="break-words font-semibold text-gray-900">{authorName}</p>
                                                             {comment.flag !== 'none' && (
                                                                 <Flag className="h-4 w-4 text-red-600" />
                                                             )}
@@ -482,7 +482,7 @@ export function BlogComponent() {
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </div>
-                                            <p className="text-gray-700 text-sm leading-relaxed">{comment.comment}</p>
+                                            <p className="break-words text-sm leading-relaxed text-gray-700">{comment.comment}</p>
                                         </div>
                                     );
                                 })
@@ -582,7 +582,7 @@ export function BlogComponent() {
 
                     <div className="border rounded-md p-3 min-h-[100px] flex flex-col">
                         {/* Toolbar */}
-                        <div className="flex gap-2 mb-2 border-b pb-2 flex-shrink-0">
+                        <div className="mb-2 flex flex-wrap gap-2 border-b pb-2">
                             <Button
                                 type="button"
                                 size="sm"
@@ -726,7 +726,7 @@ export function BlogComponent() {
                         ) : (
                             <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
                                 {/* Table Header */}
-                                <div className="grid grid-cols-7 gap-4 bg-gray-50 px-4 py-3 border-b border-gray-200 font-semibold text-sm text-gray-700 min-w-[800px]">
+                                <div className="grid min-w-[720px] grid-cols-7 gap-3 border-b border-gray-200 bg-gray-50 px-3 py-3 text-sm font-semibold text-gray-700 sm:min-w-[800px] sm:gap-4 sm:px-4">
                                     <div>Title</div>
                                     <div>Content</div>
                                     <div>Status</div>
@@ -741,7 +741,7 @@ export function BlogComponent() {
                                     {filteredBlogs.map((blog) => (
                                         <div
                                             key={blog.id}
-                                            className="grid grid-cols-7 gap-4 px-4 py-4 items-center hover:bg-gray-50 transition-colors min-w-[800px]"
+                                            className="grid min-w-[720px] grid-cols-7 items-center gap-3 px-3 py-4 transition-colors hover:bg-gray-50 sm:min-w-[800px] sm:gap-4 sm:px-4"
                                         >
                                             {/* Title */}
                                             <div className="flex items-center gap-2">

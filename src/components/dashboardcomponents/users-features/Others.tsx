@@ -66,7 +66,7 @@ export function Others() {
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
-            <div className="px-6 py-6 flex items-center gap-4">
+            <div className="flex items-center gap-3 px-3 py-4 sm:gap-4 sm:px-6 sm:py-6">
                 <Input
                     type="text"
                     placeholder="Search"
@@ -77,7 +77,7 @@ export function Others() {
             </div>
 
             {/* User List */}
-            <div className="px-6 space-y-4">
+            <div className="space-y-3 px-3 pb-4 sm:space-y-4 sm:px-6">
                 {filteredUsers.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <UserCircle className="h-12 w-12 text-gray-300 mb-4" />
@@ -90,32 +90,32 @@ export function Others() {
                     filteredUsers.map((user) => (
                     <div
                         key={user.id}
-                        className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4"
+                        className="flex flex-col items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 sm:p-4"
                     >
                         {/* Avatar */}
                         {user.user.profile?.profile_image_url ? (
                             <img 
                                 src={user.user.profile.profile_image_url} 
                                 alt={user.user.first_name || "User"} 
-                                className="w-12 h-12 rounded-full object-cover border-2 border-green-500"
+                                className="h-12 w-12 shrink-0 rounded-full border-2 border-green-500 object-cover"
                             />
                         ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-green-500 bg-gradient-to-br from-blue-400 to-blue-600 text-sm font-semibold text-white">
                                 {(user.user.first_name?.[0] || "") + (user.user.last_name?.[0] || "")}
                             </div>
                         )}
 
                         {/* User Info */}
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">
+                        <div className="min-w-0 flex-1">
+                            <h3 className="break-words font-semibold text-gray-900">
                                 {user.user.first_name} {user.user.last_name}
                             </h3>
                             <p className="text-sm text-gray-500">{user.role}</p>
-                            <p className="text-xs text-gray-400">{user.user.email}</p>
+                            <p className="break-all text-xs text-gray-400">{user.user.email}</p>
                         </div>
 
                         {/* Action Button */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 min-[420px]:gap-4">
                             <DatePill date={user.created_at} />
                         </div>
                     </div>

@@ -75,17 +75,16 @@ export const sidebarFooterLinks = {
   legal: [
     {
       label: "Privacy Policy",
-      path: "https://nextjs-frontend-beta-drab.vercel.app/about#",
+      path: "https://vetkonect.com/privacy",
     },
     {
       label: "Terms & Conditions",
-      path: "https://nextjs-frontend-beta-drab.vercel.app/about#",
+      path: "https://vetkonect.com/terms-condition",
     },
     {
       label: "About Vet konect",
-      path: "https://nextjs-frontend-beta-drab.vercel.app/about",
+      path: "https://vetkonect.com/about",
     },
-    { label: "Sitemap", path: "/sitemap" },
   ],
   contact: {
     email: "admin@vetkonect.com",
@@ -98,8 +97,6 @@ export const sidebarFooterLinks = {
       path: "https://www.linkedin.com/company/vet-konect/",
     },
     { name: "Twitter", icon: "twitter", path: "https://x.com/Vetkonectng" },
-    { name: "Discord", icon: "discord", path: "#" },
-    { name: "Slack", icon: "slack", path: "#" },
     {
       name: "Facebook",
       icon: "facebook",

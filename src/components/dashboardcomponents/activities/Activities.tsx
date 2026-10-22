@@ -77,7 +77,7 @@ export function Activities() {
                     activities.map((activity) => (
                         <div
                             key={activity.id}
-                            className="bg-white rounded-lg border border-gray-200 p-4 flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow"
+                            className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md min-[420px]:flex-row min-[420px]:items-start min-[420px]:gap-4 sm:p-4"
                         >
                             {/* Action Icon */}
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${getActionColor(activity.action)}`}>
@@ -96,7 +96,7 @@ export function Activities() {
                             </div>
 
                             {/* Timestamp */}
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0 self-start min-[420px]:self-auto">
                                 <DatePill date={activity.created_at} />
                             </div>
                         </div>

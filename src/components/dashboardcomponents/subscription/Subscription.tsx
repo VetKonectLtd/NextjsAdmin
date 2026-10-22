@@ -60,13 +60,13 @@ export function Subscription() {
             {/* Manage Subscription Button */}
             <ManageButton
                 label="Manage Subscription"
-                classes="px-6"
+                classes="px-3 sm:px-6"
                 onClick={() => navigate("/subscription/manage")}
             />
 
             {/* Subscription Type Tabs */}
-            <nav className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex items-center gap-6 overflow-x-auto">
+            <nav className="border-b border-gray-200 bg-white px-3 py-2 sm:px-6 sm:py-4">
+                <div className="scrollbar-hide flex items-center gap-3 overflow-x-auto sm:gap-6">
                     {plans.map((plan) => {
                         const typeId = plan.subscription_title.toLowerCase();
                         return (
@@ -106,7 +106,7 @@ export function Subscription() {
             </div> */}
 
             {/* Subscriber List */}
-            <div className="px-6 space-y-4 pb-6">
+            <div className="space-y-3 px-3 pb-6 sm:space-y-4 sm:px-6">
                 {isLoading ? (
                     <div className="flex justify-center py-12">
                         <Loader2 className="h-8 w-8 animate-spin text-green-500" />
@@ -127,7 +127,7 @@ export function Subscription() {
                         return (
                             <div
                                 key={subscriber.id}
-                                className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
+                                className="flex flex-col items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 shadow-sm transition-shadow hover:shadow-md min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 sm:p-4"
                             >
                                 {/* Avatar */}
                                 <div className="w-16 h-16 rounded-full border-2 border-green-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 overflow-hidden">
@@ -157,10 +157,10 @@ export function Subscription() {
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex items-center gap-4 flex-shrink-0">
+                                <div className="flex w-full flex-wrap items-center gap-2 min-[420px]:w-auto min-[420px]:shrink-0 sm:gap-4">
                                     <Button
                                         variant="destructive"
-                                        className="bg-white text-red-600 border border-red-600 hover:bg-red-50 hidden sm:flex"
+                                        className="bg-white text-red-600 border border-red-600 hover:bg-red-50"
                                     >
                                         Disable
                                     </Button>
@@ -168,12 +168,12 @@ export function Subscription() {
                                     {isUserActive ? (
                                         <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-md">
                                             <Check className="h-4 w-4 text-green-600" />
-                                            <span className="text-sm font-medium text-green-600 hidden sm:inline">Active</span>
+                                            <span className="text-sm font-medium text-green-600">Active</span>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-md">
                                             <X className="h-4 w-4 text-red-600" />
-                                            <span className="text-sm font-medium text-red-600 hidden sm:inline">Inactive</span>
+                                            <span className="text-sm font-medium text-red-600">Inactive</span>
                                         </div>
                                     )}
 
@@ -189,4 +189,3 @@ export function Subscription() {
         </div>
     );
 }
-

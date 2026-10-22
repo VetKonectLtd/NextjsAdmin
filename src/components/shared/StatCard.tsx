@@ -19,7 +19,7 @@ export function StatCard({
     return (
         <div
             className={cn(
-                "bg-white rounded-md border-2 p-4 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow",
+                "flex flex-col items-center justify-center rounded-lg border-2 p-3 shadow-sm transition-shadow hover:shadow-md sm:p-4",
                 highlighted
                     ? "border-green-500 shadow-md"
                     : "border-gray-200",
@@ -34,7 +34,7 @@ export function StatCard({
             >
                 {icon}
             </div>
-            <p className="text-xs text-gray-600 text-center mb-1">{label}</p>
+            <p className="mb-1 text-center text-xs leading-tight text-gray-600">{label}</p>
             <p
                 className={cn(
                     "text-xl font-bold",
@@ -46,4 +46,3 @@ export function StatCard({
         </div>
     );
 }
-

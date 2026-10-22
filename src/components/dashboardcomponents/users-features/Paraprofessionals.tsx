@@ -19,19 +19,24 @@ import {
 	DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import type { Paraprofessional } from "@/types/users";
+
+const isParaprofessionalApproved = (
+	status: Paraprofessional["is_approved"],
+) => status === "1" || status === 1 || status === true;
 
 export function Paraprofessionals() {
     const [searchQuery, setSearchQuery] = useState("");
     const { paraprofessionals, fetchParaprofessionals, isLoading, error } =
         useUserStore();
-    const [stackedParas, setStackedParas] = useState<any[]>([]);
+    const [stackedParas, setStackedParas] = useState<Paraprofessional[]>([]);
 
 	const [rejectModalOpen, setRejectModalOpen] = useState(false);
 	const [rejectReason, setRejectReason] = useState("");
 	const [selectedVetId, setSelectedVetId] = useState<number | null>(null);
 
 	const [detailsOpen, setDetailsOpen] = useState(false);
-	const [selectedPara, setSelectedPara] = useState<any | null>(null);
+	const [selectedPara, setSelectedPara] = useState<Paraprofessional | null>(null);
 
 	const rejectUser = useUserStore((s) => s.rejectUser);
 
@@ -49,7 +54,9 @@ export function Paraprofessionals() {
 			}
 
 			// next pages append + de-duplicate by id
-			const byId = new Map<number, any>(prev.map((p) => [p.id, p]));
+			const byId = new Map<number, Paraprofessional>(
+				prev.map((para): [number, Paraprofessional] => [para.id, para]),
+			);
 			for (const para of paraprofessionals.data) {
 				byId.set(para.id, para);
 			}
@@ -89,7 +96,7 @@ export function Paraprofessionals() {
 		setRejectModalOpen(true);
 	};
 
-	const openDetailsModal = (para: any) => {
+	const openDetailsModal = (para: Paraprofessional) => {
 		setSelectedPara(para);
 		setDetailsOpen(true);
 	};
@@ -118,7 +125,7 @@ export function Paraprofessionals() {
 	return (
 		<div className="min-h-screen bg-white">
 			{/* Search and Filter Section */}
-			<div className="px-6 py-6 flex items-center gap-4">
+			<div className="flex items-center gap-3 px-3 py-4 sm:gap-4 sm:px-6 sm:py-6">
 				<Input
 					type="text"
 					placeholder="Search"
@@ -129,7 +136,7 @@ export function Paraprofessionals() {
 			</div>
 
 			{/* List */}
-			<div className="px-6 space-y-4">
+			<div className="space-y-3 px-3 pb-4 sm:space-y-4 sm:px-6">
 				{filteredParas.length === 0 ? (
 					<div className="flex flex-col items-center justify-center py-16 text-center">
 						<UserCheck className="h-12 w-12 text-gray-300 mb-4" />
@@ -146,25 +153,25 @@ export function Paraprofessionals() {
 					filteredParas.map((para) => (
 						<div
 							key={para.id}
-							className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
+							className="flex flex-col items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 sm:p-4"
 						>
 							{/* Avatar */}
 							{para.user.profile?.profile_image_url ? (
 								<img
 									src={para.user.profile.profile_image_url}
 									alt={para.user.first_name || "Para"}
-									className="w-16 h-16 rounded-full object-cover border-2 border-green-500"
+									className="h-12 w-12 shrink-0 rounded-full border-2 border-green-500 object-cover sm:h-16 sm:w-16"
 								/>
 							) : (
-								<div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-green-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+								<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-green-500 bg-gradient-to-br from-blue-400 to-blue-600 text-sm font-semibold text-white sm:h-16 sm:w-16 sm:text-lg">
 									{(para.user.first_name?.[0] || "") +
 										(para.user.last_name?.[0] || "")}
 								</div>
 							)}
 
 							{/* Info */}
-							<div className="flex-1">
-								<h3 className="font-semibold text-gray-900 underline">
+							<div className="min-w-0 flex-1">
+								<h3 className="break-words font-semibold text-gray-900 underline">
 									{para.user.first_name} {para.user.last_name}
 								</h3>
 								<p className="text-sm text-gray-500">{para.role}</p>
@@ -173,11 +180,11 @@ export function Paraprofessionals() {
 									{para.name_of_institution}
 								</p>
 								<p className="text-xs text-gray-400">{para.contact_num}</p>
-								<p className="text-xs text-gray-400">{para.address}</p>
+								<p className="break-words text-xs text-gray-400">{para.address}</p>
 							</div>
 
 							{/* Action Buttons */}
-							<Button variant="outline" onClick={() => openDetailsModal(para)}>
+							<Button variant="outline" onClick={() => openDetailsModal(para)} className="shrink-0 self-end min-[420px]:self-auto">
 								<Eye className="h-6 w-6" />
 							</Button>
 							<Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
@@ -231,7 +238,7 @@ export function Paraprofessionals() {
 												</p>
 												<p>
 													<strong>Status:</strong>{" "}
-													{selectedPara.is_approved === "1"
+													{isParaprofessionalApproved(selectedPara.is_approved)
 														? "Verified"
 														: "Pending"}
 												</p>
@@ -253,46 +260,35 @@ export function Paraprofessionals() {
 								</DialogContent>
 							</Dialog>
 
-							<div className="flex items-center gap-3">
-								{para.is_approved === "0" ? (
-									<>
-										<Button
-											className="bg-green-500 hover:bg-green-600 text-white"
-											onClick={() =>
-												useUserStore
-													.getState()
-													.verifyUser(para.id, "paraprofessional")
-											}
-										>
-											Verify
-										</Button>
-
-										{/* <Button
-											variant="outline"
-											className="text-red-600 border-red-600 hover:bg-red-50"
-											onClick={() => openRejectModal(para.id)}
-										>
-											Reject
-										</Button> */}
-									</>
+							<div className="flex w-full flex-wrap items-center gap-2 min-[420px]:w-auto sm:gap-3">
+								{isParaprofessionalApproved(para.is_approved) ? (
+									<Button
+										variant="outline"
+										className="text-green-600 border-green-600 cursor-default hover:bg-transparent"
+									>
+										Verified
+										<Check className="ml-1 font-extrabold size-6" />
+									</Button>
 								) : (
-									<>
-										<Button
-											variant="outline"
-											className="text-green-600 border-green-600 cursor-default hover:bg-transparent"
-										>
-											Verified
-                                            <Check className="ml-1 font-extrabold size-6" />
-										</Button>
-										<Button
-											variant="outline"
-											className="text-red-600 border-red-600 hover:bg-red-50"
-											onClick={() => openRejectModal(para.id)}
-										>
-											Reject
-										</Button>
-									</>
+									<Button
+										className="bg-green-500 hover:bg-green-600 text-white"
+										onClick={() =>
+											useUserStore
+												.getState()
+												.verifyUser(para.id, "paraprofessional")
+										}
+									>
+										Verify
+									</Button>
 								)}
+
+								<Button
+									variant="outline"
+									className="text-red-600 border-red-600 hover:bg-red-50"
+									onClick={() => openRejectModal(para.id)}
+								>
+									Reject
+								</Button>
 
 								<DatePill date={para.created_at} />
 							</div>
@@ -312,7 +308,7 @@ export function Paraprofessionals() {
 										<Textarea
 											placeholder="Type rejection reason..."
 											value={rejectReason}
-											onChange={(e: any) => setRejectReason(e.target.value)}
+											onChange={(e) => setRejectReason(e.target.value)}
 											rows={4}
 										/>
 

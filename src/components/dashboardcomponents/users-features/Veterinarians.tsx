@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Loader2, AlertCircle, Stethoscope, Eye, Check } from "lucide-react";
 import { useUserStore } from "@/stores/use-user-store";
+import type { Veterinarian } from "@/types/users";
 import { DatePill } from "@/components/ui/date-pill";
 import {
     Dialog,
@@ -13,23 +14,27 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
+const isVetApproved = (status: Veterinarian["is_approved"]) =>
+    status === "1" || status === 1 || status === true;
+
 export function Veterinarians() {
     const [searchQuery, setSearchQuery] = useState("");
     const { veterinarians, fetchVeterinarians, isLoading, error } = useUserStore();
-    const [stackedVets, setStackedVets] = useState<any[]>([]);
+    const [stackedVets, setStackedVets] = useState<Veterinarian[]>([]);
 
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [selectedVetId, setSelectedVetId] = useState<number | null>(null);
 
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [selectedVet, setSelectedVet] = useState<any | null>(null);
+    const [selectedVet, setSelectedVet] = useState<Veterinarian | null>(null);
 
     const rejectUser = useUserStore((s) => s.rejectUser);
 
     useEffect(() => {
         fetchVeterinarians();
     }, [fetchVeterinarians]);
+
 
     useEffect(() => {
         if (!veterinarians?.data) return;
@@ -41,7 +46,9 @@ export function Veterinarians() {
             }
 
             // next pages append + de-duplicate by id
-            const byId = new Map<number, any>(prev.map((v) => [v.id, v]));
+            const byId = new Map<number, Veterinarian>(
+                prev.map((vet): [number, Veterinarian] => [vet.id, vet]),
+            );
             for (const vet of veterinarians.data) {
                 byId.set(vet.id, vet);
             }
@@ -81,7 +88,7 @@ export function Veterinarians() {
         setRejectModalOpen(true);
     };
 
-    const openDetailsModal = (vet: any) => {
+    const openDetailsModal = (vet: Veterinarian) => {
         setSelectedVet(vet);
         setDetailsOpen(true);
     };
@@ -174,30 +181,29 @@ export function Veterinarians() {
 
                                 <div className="w-full sm:w-auto sm:min-w-[230px]">
                                     <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                                        {vet.is_approved === "0" ? (
+                                        {isVetApproved(vet.is_approved) ? (
+                                            <Button
+                                                variant="outline"
+                                                className="w-full cursor-default border-green-600 text-green-600 hover:bg-transparent sm:w-auto"
+                                            >
+                                                Verified <Check className="ml-1 size-5" />
+                                            </Button>
+                                        ) : (
                                             <Button
                                                 className="w-full bg-green-500 text-white hover:bg-green-600 sm:w-auto"
                                                 onClick={() => useUserStore.getState().verifyUser(vet.id, "doctor")}
                                             >
                                                 Verify
                                             </Button>
-                                        ) : (
-                                            <>
-                                                <Button
-                                                    variant="outline"
-                                                    className="w-full cursor-default border-green-600 text-green-600 hover:bg-transparent sm:w-auto"
-                                                >
-                                                    Verified <Check className="ml-1 size-5" />
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    className="w-full border-red-600 text-red-600 hover:bg-red-50 sm:w-auto"
-                                                    onClick={() => openRejectModal(vet.id)}
-                                                >
-                                                    Reject
-                                                </Button>
-                                            </>
                                         )}
+
+                                        <Button
+                                            variant="outline"
+                                            className="w-full border-red-600 text-red-600 hover:bg-red-50 sm:w-auto"
+                                            onClick={() => openRejectModal(vet.id)}
+                                        >
+                                            Reject
+                                        </Button>
 
                                         <div className="w-full sm:w-auto">
                                             <DatePill date={vet.created_at} />
@@ -264,7 +270,12 @@ export function Veterinarians() {
                                 <p><strong>Role:</strong> {selectedVet.role}</p>
                                 <p><strong>Specialty:</strong> {selectedVet.specialty}</p>
                                 <p><strong>Address:</strong> {selectedVet.address}</p>
-                                <p><strong>Status:</strong> {selectedVet.is_approved === "1" ? "Verified" : "Pending"}</p>
+                                <p>
+                                    <strong>Status:</strong>{" "}
+                                    {isVetApproved(selectedVet.is_approved)
+                                        ? "Verified"
+                                        : "Pending"}
+                                </p>
                                 <p><strong>Practice License Number:</strong> {selectedVet.practice_license_num}</p>
                                 <p><strong>Joined:</strong> {selectedVet.created_at}</p>
                             </div>
@@ -293,7 +304,7 @@ export function Veterinarians() {
                         <Textarea
                             placeholder="Type rejection reason..."
                             value={rejectReason}
-                            onChange={(e: any) => setRejectReason(e.target.value)}
+                            onChange={(e) => setRejectReason(e.target.value)}
                             rows={4}
                         />
 

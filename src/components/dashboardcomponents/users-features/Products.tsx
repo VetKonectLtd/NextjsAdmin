@@ -65,7 +65,7 @@ export function Products() {
     return (
         <div className="min-h-screen bg-white">
             {/* Search and Filter Section */}
-            <div className="px-6 py-6 flex items-center gap-4">
+            <div className="flex items-center gap-3 px-3 py-4 sm:gap-4 sm:px-6 sm:py-6">
                 <Input
                     type="text"
                     placeholder="Search"
@@ -76,7 +76,7 @@ export function Products() {
             </div>
 
             {/* Product List */}
-            <div className="px-6 space-y-4">
+            <div className="space-y-3 px-3 pb-4 sm:space-y-4 sm:px-6">
                 {filteredProducts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <Package className="h-12 w-12 text-gray-300 mb-4" />
@@ -89,30 +89,30 @@ export function Products() {
                     filteredProducts.map((product) => (
                     <div
                         key={product.id}
-                        className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
+                        className="flex flex-col items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 sm:p-4"
                     >
                         {/* Product Image */}
                         {product.images_url?.[0] ? (
                             <img 
                                 src={product.images_url[0]} 
                                 alt={product.product_name} 
-                                className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                                className="h-14 w-14 shrink-0 rounded-lg border border-gray-200 object-cover sm:h-16 sm:w-16"
                             />
                         ) : (
-                            <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
+                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-400 sm:h-16 sm:w-16">
                                 No Img
                             </div>
                         )}
 
                         {/* Info */}
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{product.product_name}</h3>
+                        <div className="min-w-0 flex-1">
+                            <h3 className="break-words font-semibold text-gray-900">{product.product_name}</h3>
                             <p className="text-sm text-gray-500">{product.category} - {product.price}</p>
                             <p className="text-xs text-gray-400">Store: {product.store?.store_name}</p>
                         </div>
 
                         {/* Action Button */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex w-full flex-wrap items-center gap-2 min-[420px]:w-auto sm:gap-4">
                             <Button
                                 variant={product.disabled === "0" ? "destructive" : "default"}
                                 className={

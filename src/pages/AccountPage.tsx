@@ -172,8 +172,8 @@ export default function AccountPage() {
             </div>
 
             {/* Profile Info */}
-            <div className="pt-16 pb-8 px-[20%] text-center">
-                <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
+            <div className="px-4 pb-8 pt-16 text-center sm:px-8 lg:px-[12%] xl:px-[20%]">
+                <h2 className="break-words text-xl font-bold text-gray-900">{displayName}</h2>
                 <p className="text-sm text-gray-500">Admin</p>
 
                 {/* Info Items */}
@@ -187,7 +187,7 @@ export default function AccountPage() {
                             <MapPin className="h-5 w-5 text-gray-600" />
                         </div>
                         <p className="font-semibold text-gray-900">Location / Address</p>
-                        <p className="text-sm text-gray-500">{user?.location || "Not set"}</p>
+                        <p className="break-words text-sm text-gray-500">{user?.location || "Not set"}</p>
                     </div>
 
                     {/* Phone */}
@@ -199,7 +199,7 @@ export default function AccountPage() {
                             <Phone className="h-5 w-5 text-gray-600" />
                         </div>
                         <p className="font-semibold text-gray-900">Phone Number</p>
-                        <p className="text-sm text-gray-500">{user?.phone_number || "Not set"}</p>
+                        <p className="break-all text-sm text-gray-500">{user?.phone_number || "Not set"}</p>
                     </div>
 
                     {/* Email */}
@@ -211,7 +211,7 @@ export default function AccountPage() {
                             <Mail className="h-5 w-5 text-gray-600" />
                         </div>
                         <p className="font-semibold text-gray-900">Email</p>
-                        <p className="text-sm text-gray-500">{user?.email || "Not set"}</p>
+                        <p className="break-all text-sm text-gray-500">{user?.email || "Not set"}</p>
                     </div>
                 </div>
 
@@ -231,7 +231,7 @@ export default function AccountPage() {
 
     // Edit Form JSX
     const editFormContent = (showBackButton: boolean = false) => (
-        <div className="bg-white rounded-2xl shadow-sm p-8 h-full">
+        <div className="h-full rounded-2xl bg-white p-4 shadow-sm sm:p-8">
             {/* Back Button (Mobile Only) */}
             {showBackButton && (
                 <button 
@@ -250,7 +250,7 @@ export default function AccountPage() {
                 </p>
             </div>
 
-            <div className="max-w-[382px] mx-auto space-y-4">
+            <div className="mx-auto max-w-[382px] space-y-4">
                 {/* Email */}
                 <FormInput
                     type="email"
@@ -358,9 +358,9 @@ export default function AccountPage() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+        <div className="min-h-full bg-gray-50 p-3 sm:p-4 md:p-6">
             {/* Desktop Layout */}
-            <div className="hidden lg:grid lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+            <div className="mx-auto hidden max-w-6xl gap-6 lg:grid lg:grid-cols-5">
                 {/* Left Side - 2 columns */}
                 <div className="lg:col-span-2">
                     {profileCardContent(false)}

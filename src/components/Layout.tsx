@@ -31,8 +31,12 @@ const getPageTitle = (pathname: string): string => {
         return "Users & Features";
     }
 
+    if (pathname === "/subscription/manage") {
+        return "Manage Subscription";
+    }
+
     // Default fallback
-    return "Dashboard";
+    return "Page Not Found";
 };
 
 export function Layout({ children }: LayoutProps) {
@@ -47,21 +51,21 @@ export function Layout({ children }: LayoutProps) {
     const profileImageUrl = user?.profile_picture_url || "/avatar.png";
 
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-100">
+        <div className="flex h-dvh min-w-0 overflow-hidden bg-gray-100">
             <Sidebar />
 
             {/* Main Content Area */}
             <div
                 className={cn(
-                    "flex-1 flex flex-col transition-all duration-300 overflow-hidden",
+                    "flex min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300",
                     // No margin on mobile, margin on desktop based on collapsed state
                     "ml-0 lg:ml-64",
                     isCollapsed && "lg:ml-20"
                 )}
             >
                 {/* Top Bar with Toggle Button and Profile */}
-                <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-40">
-                    <div className="flex items-center gap-2 sm:gap-4">
+                <div className="sticky top-0 z-40 flex min-h-14 items-center justify-between border-b border-gray-200 bg-white px-3 py-3 sm:min-h-16 sm:px-6 sm:py-4">
+                    <div className="flex min-w-0 items-center gap-2 sm:gap-4">
                         {/* Mobile hamburger menu */}
                         <Button
                             variant="ghost"
@@ -86,7 +90,7 @@ export function Layout({ children }: LayoutProps) {
                             )}
                         </Button>
                         
-                        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+                        <h1 className="truncate text-base font-semibold text-gray-900 sm:text-xl">
                             {pageTitle}
                         </h1>
                     </div>
@@ -123,7 +127,7 @@ export function Layout({ children }: LayoutProps) {
                 </div>
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto">{children}</main>
+                <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto">{children}</main>
             </div>
         </div>
     );

@@ -16,7 +16,7 @@ export function ActivitiesPage() {
             <AfricaRegionWithStats statistics={[]} />
 
             {/* Main Navigation Tabs */}
-            <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-30">
+            <nav className="sticky top-0 z-30 border-b border-gray-200 bg-white px-3 py-2 sm:px-6 sm:py-3">
                 <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
                     {mainNavigationTabs.map((tab) => (
                         <button
@@ -43,4 +43,3 @@ export function ActivitiesPage() {
         </div>
     );
 }
-

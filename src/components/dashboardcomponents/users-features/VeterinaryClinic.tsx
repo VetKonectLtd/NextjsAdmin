@@ -18,18 +18,22 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import type { Clinic } from "@/types/users";
+
+const isClinicApproved = (status: Clinic["is_approved"]) =>
+    status === "1" || status === 1 || status === true;
 
 export function VeterinaryClinic() {
     const [searchQuery, setSearchQuery] = useState("");
     const { clinics, fetchClinics, isLoading, error } = useUserStore();
-    const [stackedClinics, setStackedClinics] = useState<any[]>([]);
+    const [stackedClinics, setStackedClinics] = useState<Clinic[]>([]);
 
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [selectedVetId, setSelectedVetId] = useState<number | null>(null);
 
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [selectedClinic, setSelectedClinic] = useState<any | null>(null);
+    const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
 
     const rejectUser = useUserStore((s) => s.rejectUser);
 
@@ -47,7 +51,9 @@ export function VeterinaryClinic() {
             }
 
             // next pages append + de-duplicate by id
-            const byId = new Map<number, any>(prev.map((c) => [c.id, c]));
+            const byId = new Map<number, Clinic>(
+                prev.map((clinic): [number, Clinic] => [clinic.id, clinic]),
+            );
             for (const clinic of clinics.data) {
                 byId.set(clinic.id, clinic);
             }
@@ -87,7 +93,7 @@ export function VeterinaryClinic() {
         setRejectModalOpen(true);
     };
 
-    const openDetailsModal = (clinic: any) => {
+    const openDetailsModal = (clinic: Clinic) => {
         setSelectedClinic(clinic);
         setDetailsOpen(true);
     };
@@ -173,7 +179,15 @@ export function VeterinaryClinic() {
                                         Details
                                     </Button>
 
-                                    {clinic.is_approved === "0" ? (
+                                    {isClinicApproved(clinic.is_approved) ? (
+                                        <Button
+                                            variant="outline"
+                                            className="w-full cursor-default border-green-600 text-green-600 hover:bg-transparent sm:w-auto"
+                                        >
+                                            Verified
+                                            <Check className="ml-1 size-5" />
+                                        </Button>
+                                    ) : (
                                         <Button
                                             className="w-full bg-green-500 text-white hover:bg-green-600 sm:w-auto"
                                             onClick={() =>
@@ -184,24 +198,14 @@ export function VeterinaryClinic() {
                                         >
                                             Verify
                                         </Button>
-                                    ) : (
-                                        <>
-                                            <Button
-                                                variant="outline"
-                                                className="w-full cursor-default border-green-600 text-green-600 hover:bg-transparent sm:w-auto"
-                                            >
-                                                Verified
-                                                <Check className="ml-1 size-5" />
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                className="w-full border-red-600 text-red-600 hover:bg-red-50 sm:w-auto"
-                                                onClick={() => openRejectModal(clinic.id)}
-                                            >
-                                                Reject
-                                            </Button>
-                                        </>
                                     )}
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-red-600 text-red-600 hover:bg-red-50 sm:w-auto"
+                                        onClick={() => openRejectModal(clinic.id)}
+                                    >
+                                        Reject
+                                    </Button>
                                 </div>
 
                                 <div className="w-full sm:w-auto">
@@ -268,7 +272,9 @@ export function VeterinaryClinic() {
                                 <p><strong>Address:</strong> {selectedClinic.address}</p>
                                 <p>
                                     <strong>Status:</strong>{" "}
-                                    {selectedClinic.is_approved === "1" ? "Verified" : "Pending"}
+                                    {isClinicApproved(selectedClinic.is_approved)
+                                        ? "Verified"
+                                        : "Pending"}
                                 </p>
                                 <p><strong>Joined:</strong> {selectedClinic.created_at}</p>
                             </div>
@@ -298,7 +304,7 @@ export function VeterinaryClinic() {
                         <Textarea
                             placeholder="Type rejection reason..."
                             value={rejectReason}
-                            onChange={(e: any) => setRejectReason(e.target.value)}
+                            onChange={(e) => setRejectReason(e.target.value)}
                             rows={4}
                         />
 

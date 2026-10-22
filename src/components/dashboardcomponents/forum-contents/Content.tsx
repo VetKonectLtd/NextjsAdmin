@@ -161,10 +161,10 @@ export function Content() {
                         >
                             {/* Card Header - Clickable to expand */}
                             <div
-                                className="p-4 flex items-center justify-between cursor-pointer"
+                                className="flex cursor-pointer flex-col gap-3 p-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between sm:p-4"
                                 onClick={() => toggleExpand(content.id)}
                             >
-                                <div className="flex-1 flex items-center gap-3">
+                                <div className="flex min-w-0 flex-1 items-center gap-3">
                                     {/* Author Avatar */}
                                     {content.author?.image ? (
                                         <img
@@ -179,7 +179,7 @@ export function Content() {
                                     )}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-semibold text-gray-900">{content.title}</h3>
+                                            <h3 className="break-words font-semibold text-gray-900">{content.title}</h3>
                                             {/* {getStatusBadge(content.status)} */}
                                         </div>
                                         <p className="text-sm text-gray-500">
@@ -187,7 +187,7 @@ export function Content() {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
+                                <div className="flex shrink-0 items-center justify-between gap-3 min-[420px]:justify-end">
                                     <DatePill date={content.created_at} />
                                     {expandedId === content.id ? (
                                         <ChevronUp className="h-5 w-5 text-gray-400" />
@@ -211,7 +211,7 @@ export function Content() {
                                     </div>
 
                                     {/* Stats */}
-                                    <div className="flex gap-4 mb-4 text-xs text-gray-500">
+                                    <div className="mb-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500">
                                         <span>👁 {content.views_count} views</span>
                                         <span>💬 {content.comments_count} comments</span>
                                         <span>❤️ {content.likes_count} likes</span>
@@ -219,7 +219,7 @@ export function Content() {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         {content.status === "published" && (
                                             <>
                                                 <Button
@@ -293,4 +293,3 @@ export function Content() {
         </div>
     );
 }
-

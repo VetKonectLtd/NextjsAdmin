@@ -30,8 +30,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md px-6">
+    <div className="flex min-h-dvh items-center justify-center bg-gray-50 px-3 py-8 sm:px-6">
+      <div className="w-full max-w-md">
         {/* Logo / Branding */}
         <div className="text-center mb-8 flex flex-col items-center">
           <LogoIcon className="w-16 h-16 mb-3" />
@@ -40,7 +40,7 @@ export function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Welcome back</h2>
             <p className="text-gray-500 text-sm mt-1">

@@ -12,6 +12,7 @@ import AccountPage from "@/pages/AccountPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ManageSubscription from "./pages/ManageSubscription";
 import QuickSearch from "./pages/QuickSearch";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 
 function App() {
   return (
@@ -127,6 +128,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <BlogPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <NotFoundPage />
               </Layout>
             </ProtectedRoute>
           }

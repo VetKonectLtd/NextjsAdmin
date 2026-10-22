@@ -145,8 +145,8 @@ export function Promotion() {
             />
 
             {/* Dynamic Tabs */}
-            <nav className="bg-white border-b border-gray-200 px-6 py-4 overflow-x-auto">
-                <div className="flex items-center gap-6 min-w-max relative">
+            <nav className="overflow-x-auto border-b border-gray-200 bg-white px-3 py-2 sm:px-6 sm:py-4">
+                <div className="relative flex min-w-max items-center gap-3 sm:gap-6">
                     {promotions.map((plan) => {
                         const isActive = activeTab === plan.title;
                         return (
@@ -211,13 +211,13 @@ export function Promotion() {
             </div> */}
 
             {/* Content List */}
-            <div className="px-6 space-y-4 pb-6">
+            <div className="space-y-3 px-3 pb-6 sm:space-y-4 sm:px-6">
                 {isLoading ? (
                     <div className="flex justify-center py-12">
                         <Loader2 className="h-8 w-8 animate-spin text-green-500" />
                     </div>
                 ) : filteredUsers.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                    <div className="flex flex-col items-center justify-center px-4 py-12 text-center text-gray-500">
                         <SearchSlash className="h-12 w-12 mb-2 opacity-50" />
                         <p>No active promotions found for this plan.</p>
                     </div>
@@ -298,13 +298,13 @@ function PromotionCard({
     }
 
     return (
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <div         className="rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
             {/* Header / Summary */}
             <div 
-                className="p-4 flex items-center justify-between cursor-pointer"
+                className="flex cursor-pointer flex-col gap-3 p-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between sm:p-4"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div className="flex items-center gap-4">
+                <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
                         {item.user.profile?.profile_image_url ? (
                             <img 
@@ -318,15 +318,15 @@ function PromotionCard({
                             </div>
                         )}
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-gray-900">
+                    <div className="min-w-0">
+                        <h3 className="break-words font-semibold text-gray-900">
                             {item.user.first_name} {item.user.last_name}
                         </h3>
                         <p className="text-sm text-gray-500 capitalize">{item.user.activeRoleName}</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2 min-[420px]:justify-end sm:gap-4">
                     {/* Expire Button */}
                     {!isExpired && !isCancelled && (
                         <Button
@@ -352,8 +352,8 @@ function PromotionCard({
             {/* Expanded Content: Product Details */}
             {isExpanded && (
                 <div className="border-t border-gray-100 p-4 bg-gray-50/50">
-                    <div className="flex gap-4">
-                        <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0 border border-gray-200">
+                    <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:gap-4">
+                        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:h-24 sm:w-24">
                              {item.product.images_url && item.product.images_url.length > 0 ? (
                                 <img 
                                     src={item.product.images_url[0]} 
@@ -366,10 +366,10 @@ function PromotionCard({
                                 </div>
                              )}
                         </div>
-                        <div className="flex-1 space-y-2">
-                            <div className="flex justify-between items-start">
+                        <div className="min-w-0 flex-1 space-y-2">
+                            <div className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between">
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 text-lg">{item.product.product_name}</h4>
+                                    <h4 className="break-words text-lg font-semibold text-gray-900">{item.product.product_name}</h4>
                                     <div className="flex items-center text-gray-500 text-xs mt-1">
                                         <MapPin className="h-3 w-3 mr-1" />
                                         {item.product.location}

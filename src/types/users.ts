@@ -59,7 +59,8 @@ export interface Veterinarian {
   latitude: string;
   role: string;
   availability: string;
-  is_approved: string;
+  is_approved: string | number | boolean;
+  practice_license_num?: string | null;
   created_at: string;
   average_rating: number;
   user: BaseUser;
@@ -77,7 +78,7 @@ export interface Paraprofessional {
   latitude: string;
   role: string;
   availability: string;
-  is_approved: string;
+  is_approved: string | number | boolean;
   created_at: string;
   average_rating: number;
   user: BaseUser;
@@ -95,7 +96,7 @@ export interface Clinic {
   latitude: string;
   role: string;
   availability: string;
-  is_approved: string;
+  is_approved: string | number | boolean;
   created_at: string;
   average_rating: number;
   user: BaseUser;
