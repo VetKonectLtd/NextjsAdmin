@@ -13,12 +13,20 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 const isVetApproved = (status: Veterinarian["is_approved"]) =>
     status === "1" || status === 1 || status === true;
 
 export function Veterinarians() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [verificationFilter, setVerificationFilter] = useState("all");
     const { veterinarians, fetchVeterinarians, isLoading, error } = useUserStore();
     const [stackedVets, setStackedVets] = useState<Veterinarian[]>([]);
 
@@ -105,25 +113,49 @@ export function Veterinarians() {
     const filteredVets =
         stackedVets.filter((vet) => {
             const searchLower = searchQuery.toLowerCase();
-            return (
+            const matchesSearch =
                 vet.user.first_name?.toLowerCase().includes(searchLower) ||
                 vet.user.last_name?.toLowerCase().includes(searchLower) ||
                 vet.specialty.toLowerCase().includes(searchLower) ||
-                vet.address.toLowerCase().includes(searchLower)
-            );
+                vet.address.toLowerCase().includes(searchLower);
+            const isVerified = isVetApproved(vet.is_approved);
+            const matchesVerification =
+                verificationFilter === "all" ||
+                (verificationFilter === "verified" && isVerified) ||
+                (verificationFilter === "unverified" && !isVerified);
+
+            return matchesSearch && matchesVerification;
         }) || [];
 
     return (
         <div className="min-h-screen bg-white">
             {/* Search */}
             <div className="px-4 py-4 sm:px-6 sm:py-6">
-                <Input
-                    type="text"
-                    placeholder="Search name, specialty, address..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
-                />
+                <div className="flex flex-col gap-3 sm:flex-row">
+                    <Input
+                        type="text"
+                        placeholder="Search name, specialty, address..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full sm:flex-1"
+                    />
+                    <Select
+                        value={verificationFilter}
+                        onValueChange={setVerificationFilter}
+                    >
+                        <SelectTrigger
+                            aria-label="Filter veterinarians by verification status"
+                            className="w-full sm:w-56"
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All veterinarians</SelectItem>
+                            <SelectItem value="verified">Verified</SelectItem>
+                            <SelectItem value="unverified">Unverified</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             {/* List */}
@@ -135,8 +167,8 @@ export function Veterinarians() {
                             No veterinarians found
                         </h3>
                         <p className="text-sm text-gray-500">
-                            {searchQuery
-                                ? "Try adjusting your search query"
+                            {searchQuery || verificationFilter !== "all"
+                                ? "Try adjusting your search or filter"
                                 : "Veterinarians will appear here once they register"}
                         </p>
                     </div>

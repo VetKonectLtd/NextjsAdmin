@@ -18,6 +18,13 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import type { Clinic } from "@/types/users";
 
 const isClinicApproved = (status: Clinic["is_approved"]) =>
@@ -25,6 +32,7 @@ const isClinicApproved = (status: Clinic["is_approved"]) =>
 
 export function VeterinaryClinic() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [verificationFilter, setVerificationFilter] = useState("all");
     const { clinics, fetchClinics, isLoading, error } = useUserStore();
     const [stackedClinics, setStackedClinics] = useState<Clinic[]>([]);
 
@@ -110,27 +118,60 @@ export function VeterinaryClinic() {
     const filteredClinics =
         stackedClinics.filter((clinic) => {
             const searchLower = searchQuery.toLowerCase();
-            return (
+            const matchesSearch =
                 clinic.name_of_clinic.toLowerCase().includes(searchLower) ||
                 clinic.specialty.toLowerCase().includes(searchLower) ||
-                clinic.address.toLowerCase().includes(searchLower)
-            );
+                clinic.address.toLowerCase().includes(searchLower);
+            const isVerified = isClinicApproved(clinic.is_approved);
+            const matchesVerification =
+                verificationFilter === "all" ||
+                (verificationFilter === "verified" && isVerified) ||
+                (verificationFilter === "unverified" && !isVerified);
+
+            return matchesSearch && matchesVerification;
         }) || [];
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-6 sm:py-6">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-3 py-4 sm:flex-row sm:items-center sm:px-6 sm:py-6">
                 <Input
                     type="text"
                     placeholder="Search clinic, specialty, address..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full text-sm sm:text-base"
+                    className="w-full flex-1 text-sm sm:text-base"
                 />
+                <Select
+                    value={verificationFilter}
+                    onValueChange={setVerificationFilter}
+                >
+                    <SelectTrigger
+                        aria-label="Filter veterinary clinics by verification status"
+                        className="w-full sm:w-56"
+                    >
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All veterinary clinics</SelectItem>
+                        <SelectItem value="verified">Verified</SelectItem>
+                        <SelectItem value="unverified">Unverified</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="mx-auto w-full max-w-6xl space-y-3 px-3 pb-4 sm:space-y-4 sm:px-6 sm:pb-6">
-                {filteredClinics.map((clinic) => (
+                {filteredClinics.length === 0 ? (
+                    <div className="py-16 text-center">
+                        <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                            No veterinary clinics found
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                            {searchQuery || verificationFilter !== "all"
+                                ? "Try adjusting your search or filter"
+                                : "Veterinary clinics will appear here once they register"}
+                        </p>
+                    </div>
+                ) : filteredClinics.map((clinic) => (
                     <div
                         key={clinic.id}
                         className="overflow-hidden rounded-lg border border-gray-200 bg-white p-3 sm:p-4"

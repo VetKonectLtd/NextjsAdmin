@@ -19,6 +19,13 @@ import {
 	DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import type { Paraprofessional } from "@/types/users";
 
 const isParaprofessionalApproved = (
@@ -27,6 +34,7 @@ const isParaprofessionalApproved = (
 
 export function Paraprofessionals() {
     const [searchQuery, setSearchQuery] = useState("");
+	const [verificationFilter, setVerificationFilter] = useState("all");
     const { paraprofessionals, fetchParaprofessionals, isLoading, error } =
         useUserStore();
     const [stackedParas, setStackedParas] = useState<Paraprofessional[]>([]);
@@ -114,18 +122,24 @@ export function Paraprofessionals() {
 	const filteredParas =
 		stackedParas.filter((para) => {
 			const searchLower = searchQuery.toLowerCase();
-			return (
+			const matchesSearch =
 				para.user.first_name?.toLowerCase().includes(searchLower) ||
 				para.user.last_name?.toLowerCase().includes(searchLower) ||
 				para.specialty.toLowerCase().includes(searchLower) ||
-				para.name_of_institution.toLowerCase().includes(searchLower)
-			);
+				para.name_of_institution.toLowerCase().includes(searchLower);
+			const isVerified = isParaprofessionalApproved(para.is_approved);
+			const matchesVerification =
+				verificationFilter === "all" ||
+				(verificationFilter === "verified" && isVerified) ||
+				(verificationFilter === "unverified" && !isVerified);
+
+			return matchesSearch && matchesVerification;
 		}) || [];
 
 	return (
 		<div className="min-h-screen bg-white">
 			{/* Search and Filter Section */}
-			<div className="flex items-center gap-3 px-3 py-4 sm:gap-4 sm:px-6 sm:py-6">
+			<div className="flex flex-col gap-3 px-3 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-6 sm:py-6">
 				<Input
 					type="text"
 					placeholder="Search"
@@ -133,6 +147,22 @@ export function Paraprofessionals() {
 					onChange={(e) => setSearchQuery(e.target.value)}
 					className="flex-1"
 				/>
+				<Select
+					value={verificationFilter}
+					onValueChange={setVerificationFilter}
+				>
+					<SelectTrigger
+						aria-label="Filter paraprofessionals by verification status"
+						className="w-full sm:w-56"
+					>
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="all">All paraprofessionals</SelectItem>
+						<SelectItem value="verified">Verified</SelectItem>
+						<SelectItem value="unverified">Unverified</SelectItem>
+					</SelectContent>
+				</Select>
 			</div>
 
 			{/* List */}
@@ -144,8 +174,8 @@ export function Paraprofessionals() {
 							No paraprofessionals found
 						</h3>
 						<p className="text-sm text-gray-500">
-							{searchQuery
-								? "Try adjusting your search query"
+							{searchQuery || verificationFilter !== "all"
+								? "Try adjusting your search or filter"
 								: "Paraprofessionals will appear here once they register"}
 						</p>
 					</div>
